@@ -26,6 +26,8 @@ import org.addhen.smssync.PendingMessagesActivity;
 import org.addhen.smssync.Prefrences;
 import org.addhen.smssync.SentMessagesActivity;
 import org.addhen.smssync.receivers.ConnectivityChangedReceiver;
+import org.addhen.smssync.util.AggregateMessage;
+import org.addhen.smssync.util.AggregateMessageFactory;
 import org.addhen.smssync.util.SentMessagesUtil;
 import org.addhen.smssync.util.ServicesConstants;
 import org.addhen.smssync.util.Util;
@@ -147,124 +149,83 @@ public class SmsReceiverService extends Service {
      */
     private void handleSmsReceived(Intent intent) {
 
-        Bundle bundle = intent.getExtras();
-        Prefrences.loadPreferences(SmsReceiverService.this);
+		Bundle bundle = intent.getExtras();
+		Prefrences.loadPreferences(SmsReceiverService.this);
 
-        if (bundle != null) {
-            SmsMessage[] messages = getMessagesFromIntent(intent);
-            sms = messages[0];
-            if (messages != null) {
-                // extract message details. phone number and the message body
-                messagesFrom = sms.getOriginatingAddress();
-                messagesTimestamp = String.valueOf(sms.getTimestampMillis());
-                messagesId = String.valueOf(Util.getId(this, sms, "id"));
-                String body;
-                if (messages.length == 1 || sms.isReplace()) {
-                    body = sms.getDisplayMessageBody();
+		if (bundle != null) {
+			SmsMessage[] messages = getMessagesFromIntent(intent);
+			sms = messages[0];
+			if (messages != null) {
+				// extract message details. phone number and the message body
+				messagesFrom = sms.getOriginatingAddress();
+				messagesTimestamp = String.valueOf(sms.getTimestampMillis());
+				messagesId = String.valueOf(Util.getId(this, sms, "id"));
+				String body;
+				if (messages.length == 1 || sms.isReplace()) {
+					body = sms.getDisplayMessageBody();
 
-                } else {
-                    StringBuilder bodyText = new StringBuilder();
-                    for (int i = 0; i < messages.length; i++) {
-                        bodyText.append(messages[i].getMessageBody());
-                    }
-                    body = bodyText.toString();
-                }
-                messagesBody = body;
-            }
-        }
+				} else {
+					StringBuilder bodyText = new StringBuilder();
+					for (int i = 0; i < messages.length; i++) {
+						bodyText.append(messages[i].getMessageBody());
+					}
+					body = bodyText.toString();
+				}
+				messagesBody = body;
+			}
+		}
 
-        if (Prefrences.enabled) {
+		if (Prefrences.enabled) {
+			//check if right format and post if possible, otherwise add to pending box
+			AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
+			if(aggregateMessage != null) {
+				if (Util.isConnected(SmsReceiverService.this)) {
+					// get the right format
+					aggregateMessage.parse();
+					AggregateMessage mappedMessage = aggregateMessage.convert();
 
-            if (Util.isConnected(SmsReceiverService.this)) {
+					String xml = mappedMessage.getXMLString();
 
-                boolean posted = false;
-                // if keywoard is enabled
-                if (!Prefrences.keyword.equals("")) {
-                    String[] keywords = Prefrences.keyword.split(",");
-                    Log.i(CLASS_TAG, "Keyword enabled:" + Prefrences.keyword);
-                    if (Util.processString(messagesBody, keywords)) {
+					boolean posted = Util.postToAWebService(xml, SmsReceiverService.this);
+					// send auto response from phone not server.
+					if (Prefrences.enableReply) {
+						// send auto response
+						Util.sendSms(SmsReceiverService.this, messagesFrom, Prefrences.reply);
+					}
 
-                        posted = Util.postToAWebService(messagesFrom, messagesBody,
-                                messagesTimestamp, messagesId, SmsReceiverService.this);
+					if (!posted) {
+						this.showNotification(messagesBody, getString(R.string.sending_failed));
+						this.postToPendingBox();
+						handler.post(mDisplayMessages);
 
-                        // send auto response from phone not server.
-                        if (Prefrences.enableReply) {
-                            // send auto response
-                            Util.sendSms(SmsReceiverService.this, messagesFrom, Prefrences.reply);
-                        }
+						// attempt to make a data connection
+						connectToDataNetwork();
 
-                        if (!posted) {
-                            this.showNotification(messagesBody, getString(R.string.sending_failed));
-                            this.postToPendingBox();
-                            handler.post(mDisplayMessages);
+						if (Prefrences.autoDelete) {
+							Util.delSmsFromInbox(SmsReceiverService.this, sms);
+						}
+					} else {
+						this.postToSentBox();
+						if (Prefrences.autoDelete) {
+							Util.delSmsFromInbox(SmsReceiverService.this, sms);
+						}
+						this.showNotification(messagesBody, getString(R.string.sending_succeeded));
+					}
 
-                            // attempt to make a data connection
-                            connectToDataNetwork();
+				} else {
+					// no internet
+					this.showNotification(messagesBody, getString(R.string.sending_failed));
+					this.postToPendingBox();
+					handler.post(mDisplayMessages);
 
-                            // Delete messages from message app's inbox only
-                            // when smssync is turned on
-                            if (Prefrences.autoDelete) {
-                                Util.delSmsFromInbox(SmsReceiverService.this, sms);
-                            }
-
-                        } else {
-                            // log sent messages
-                            this.postToSentBox();
-
-                            if (Prefrences.autoDelete) {
-                                Util.delSmsFromInbox(SmsReceiverService.this, sms);
-                            }
-
-                            this.showNotification(messagesBody,
-                                    getString(R.string.sending_succeeded));
-                        }
-                    }
-
-                    // keyword is not enabled
-                } else {
-
-                    posted = Util.postToAWebService(messagesFrom, messagesBody, messagesTimestamp,
-                            messagesId, SmsReceiverService.this);
-                    // send auto response from phone not server.
-                    if (Prefrences.enableReply) {
-                        // send auto response
-                        Util.sendSms(SmsReceiverService.this, messagesFrom, Prefrences.reply);
-                    }
-
-                    if (!posted) {
-                        this.showNotification(messagesBody, getString(R.string.sending_failed));
-                        this.postToPendingBox();
-                        handler.post(mDisplayMessages);
-
-                        // attempt to make a data connection
-                        connectToDataNetwork();
-
-                        if (Prefrences.autoDelete) {
-                            Util.delSmsFromInbox(SmsReceiverService.this, sms);
-                        }
-                    } else {
-                        this.postToSentBox();
-                        if (Prefrences.autoDelete) {
-                            Util.delSmsFromInbox(SmsReceiverService.this, sms);
-                        }
-                        this.showNotification(messagesBody, getString(R.string.sending_succeeded));
-                    }
-                }
-
-            } else {
-                // no internet
-                this.showNotification(messagesBody, getString(R.string.sending_failed));
-                this.postToPendingBox();
-                handler.post(mDisplayMessages);
-
-                connectToDataNetwork();
-                if (Prefrences.autoDelete) {
-                    Util.delSmsFromInbox(SmsReceiverService.this, sms);
-                }
-            }
-
-        }
-    }
+					connectToDataNetwork();
+					if (Prefrences.autoDelete) {
+						Util.delSmsFromInbox(SmsReceiverService.this, sms);
+					}
+				}
+			}
+		}
+	}
 
     /**
      * Show a notification
