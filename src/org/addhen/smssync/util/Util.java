@@ -672,7 +672,7 @@ public class Util {
 					if (payloadObject != null) {
 						task = payloadObject.getString("task");
 						secret = payloadObject.getString("secret");
-						if ((task.equals("send")) && (secret.equals(Prefrences.apiKey))) {
+						if (task.equals("send")) {
 							jsonArray = payloadObject.getJSONArray("messages");
 
 							for (int index = 0; index < jsonArray.length(); ++index) {
