@@ -1,5 +1,6 @@
 package org.addhen.smssync.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
  public abstract class AggregateMessage {
@@ -7,7 +8,8 @@ import java.util.Map;
 	public   String formId;
 	public   String periodText;
 	public   String orgUnit;
-	protected String text;
+	public	 Map<String, String> dataValues = new HashMap<String, String>();
+	protected String body;
 	
 	/**
 	 * 
@@ -21,19 +23,17 @@ import java.util.Map;
 	 * @param dataValues
 	 */
 	public AggregateMessage(String formId, String periodText,Map<String,String>  dataValues) {
-
 		this.formId = formId;
 		this.periodText = periodText;
+		this.dataValues = dataValues;
 	}
 	
-	public AggregateMessage(String text) {
-		this.text = text;
+	public AggregateMessage(String body) {
+		this.body = body;
 	}
 	/**
 	 * 
 	 */
-	public abstract boolean parse();
-	
+	public abstract boolean parse();	
 	public abstract String getXMLString();
-	public abstract AggregateMessage convert();
 }
