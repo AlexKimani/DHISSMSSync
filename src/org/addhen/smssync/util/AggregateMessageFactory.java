@@ -71,6 +71,7 @@ class PipedMessage extends AggregateMessage {
 
 		writer = new StringWriter();
 		serializer = Xml.newSerializer();
+		
 		// start building xml file
 		try {
 			// we set the FileOutputStream as output for the serializer, using
