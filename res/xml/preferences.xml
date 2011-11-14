@@ -16,7 +16,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <PreferenceCategory android:title="@string/general_settings" >
-
+		
         <EditTextPreference
             android:defaultValue="@string/http_text"
             android:dialogTitle="@string/edittxt_website_pref_dialog_title"
@@ -37,16 +37,14 @@
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/dhis_settings" >
-       <EditTextPreference
+
+        <org.addhen.smssync.util.LoginPreferenceDialog
             android:dialogTitle="@string/dialog_title_username"
-            android:key="dhis_username"
+            android:key="dhis_login"
             android:summary="@string/edittxt_username_summary"
             android:title="@string/edittxt_username_title" />
-       <EditTextPreference
-            android:dialogTitle="@string/dialog_title_password"
-            android:key="dhis_password"
-            android:summary="@string/edittxt_password_summary"
-            android:title="@string/edittxt_password_title" />
+
+        
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/reply_settings" >
