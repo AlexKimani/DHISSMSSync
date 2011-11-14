@@ -27,6 +27,7 @@ import org.addhen.smssync.services.AutoSyncScheduledService;
 import org.addhen.smssync.services.CheckTaskScheduledService;
 import org.addhen.smssync.services.CheckTaskService;
 import org.addhen.smssync.services.ScheduleServices;
+import org.addhen.smssync.util.LoginPreferenceDialog;
 import org.addhen.smssync.util.ServicesConstants;
 import org.addhen.smssync.util.Util;
 
@@ -54,17 +55,16 @@ import android.util.Log;
  */
 public class Settings extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
-	
-	private static final String CLASS_TAG = Settings.class.getSimpleName();
 
+	private static final String CLASS_TAG = Settings.class.getSimpleName();
 
 	/**
 	 * Dhis preferences
 	 */
-	public static final String KEY_USERNAME_PREF = "dhis_username";
-	private EditTextPreference dhisUsernamePref;
-	public static final String KEY_PASSWORD_PREF = "dhis_password";
-	private EditTextPreference dhisPasswordPref;
+	public static final String KEY_LOGIN_PREF = "dhis_login";
+	private LoginPreferenceDialog dhisLoginPref;
+
+	
 	/**
 	 * Other preferences
 	 */
@@ -172,10 +172,10 @@ public class Settings extends PreferenceActivity implements
 		/**
 		 * Dhis preferences
 		 */
-		dhisUsernamePref = (EditTextPreference) getPreferenceScreen()
-				.findPreference(KEY_USERNAME_PREF);
-		dhisPasswordPref = (EditTextPreference) getPreferenceScreen()
-				.findPreference(KEY_PASSWORD_PREF);
+		dhisLoginPref = (LoginPreferenceDialog) getPreferenceScreen()
+				.findPreference(KEY_LOGIN_PREF);
+
+		
 
 		/**
 		 * Other preferences
@@ -288,22 +288,9 @@ public class Settings extends PreferenceActivity implements
 
 		settings = getSharedPreferences(PREFS_NAME, 0);
 
-		/**
-		 * Dhis preferences
-		 */
-		/**
-		 * Sets the text to displayed in the username and password preference
-		 */
-		if (dhisUsernamePref.getText().equals("")){
-			dhisUsernamePref.setText(getString(R.string.username_set));
-		} else {
-			dhisUsernamePref.setText(getString(R.string.set_username));
-		}
-		if (dhisPasswordPref.getText().equals("")){
-			dhisPasswordPref.setText(getString(R.string.password_set));
-		} else {
-			dhisPasswordPref.setText(getString(R.string.set_password));
-		}
+		
+		
+
 		/**
 		 * Other preferences
 		 */
@@ -353,8 +340,8 @@ public class Settings extends PreferenceActivity implements
 		/**
 		 * Dhis preferences
 		 */
-		editor.putString("dhisUsernamePref", Util.base64encode(dhisUsernamePref.getText().getBytes()));
-		editor.putString("dhisPasswordPref", Util.base64encode(dhisPasswordPref.getText().getBytes()));
+		editor.putString("dhisLoginPref", dhisLoginPref.getText());
+
 		/**
 		 * Other preferences
 		 */
@@ -369,6 +356,9 @@ public class Settings extends PreferenceActivity implements
 		editor.putInt("AutoTime", autoTime);
 		editor.putInt("taskCheck", taskCheckTime);
 		editor.commit();
+
+		// blanks out password and username field
+
 	}
 
 	@Override
@@ -409,16 +399,16 @@ public class Settings extends PreferenceActivity implements
 		/**
 		 * Dhis preferences
 		 */
-		if(key.equals(KEY_USERNAME_PREF)){
-			Log.i(CLASS_TAG, "New username set");
-			Util.showToast(Settings.this, R.string.username_changed);
-		}
-		if(key.equals(KEY_PASSWORD_PREF)){
-			Log.i(CLASS_TAG, "New password set");
-			Util.showToast(Settings.this, R.string.password_changed);
+		/**
+		 * Handles enabling/disabling of password field on change
+		 */
+		if (key.equals(KEY_LOGIN_PREF)) {
+			
+			Util.showToast(Settings.this, R.string.login_changed);
+
 		}
 		
-		
+
 		/**
 		 * Other preferences
 		 */
