@@ -182,9 +182,7 @@ public class SmsReceiverService extends Service {
 				if (Util.isConnected(SmsReceiverService.this)) {
 					// get the right format
 					aggregateMessage.parse();
-					AggregateMessage mappedMessage = aggregateMessage.convert();
-
-					String xml = mappedMessage.getXMLString();
+					String xml = aggregateMessage.getXMLString();
 
 					boolean posted = Util.postToAWebService(xml, SmsReceiverService.this);
 					// send auto response from phone not server.

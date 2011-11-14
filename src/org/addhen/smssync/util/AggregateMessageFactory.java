@@ -17,26 +17,15 @@ import android.util.Xml;
  *
  */
 class PipedMessage extends AggregateMessage {
-	private static final String CLASS_TAG = PipedMessage.class
-			.getCanonicalName();
-	private Map<String, String> dataValues;
+	private static final String CLASS_TAG = PipedMessage.class.getCanonicalName();
 
-	public PipedMessage(String formId, String periodText,
-			Map<String, String> dataValues) {
+	public PipedMessage(String formId, String periodText, Map<String, String> dataValues) {
 		super(formId, periodText, dataValues);
 		// TODO Auto-generated constructor stub
 	}
 
 	public PipedMessage(String body) {
 		super(body);
-		dataValues = new HashMap<String, String>();
-	}
-
-	public PipedMessage(PipedMessage pipedMessage) {
-		this.formId = pipedMessage.formId;
-		this.periodText = pipedMessage.periodText;
-		this.dataValues = new HashMap<String, String>();
-		this.orgUnit = pipedMessage.orgUnit;
 	}
 
 	/**
@@ -44,13 +33,13 @@ class PipedMessage extends AggregateMessage {
 	 */
 	public boolean parse() {
 
-		if (text == null || text.length() < 0) {
+		if (body == null || body.length() < 0) {
 			return false;
 		}
 
 		String[] values;
 
-		String[] parts = text.split("#");
+		String[] parts = body.split("#");
 		if (parts.length != 3) {
 			return false;
 		}
@@ -65,10 +54,11 @@ class PipedMessage extends AggregateMessage {
 
 		return true;
 	}
+	
 	public String getXMLString() {
 		StringWriter writer;
 		XmlSerializer serializer;
-
+		DhisMappingHandler mapping = new DhisMappingHandler(formId);
 		writer = new StringWriter();
 		serializer = Xml.newSerializer();
 		
@@ -77,17 +67,22 @@ class PipedMessage extends AggregateMessage {
 			// we set the FileOutputStream as output for the serializer, using
 			serializer.setOutput(writer);
 
+			
+			//TESING
+			String dsTest = mapping.getDataSetId();
 
 			// Data
+			
 			serializer.startTag(null, "dataValueSet");
 			serializer.attribute(null, "xmlns", "http://dhis2.org/schema/dxf/2.0-SNAPSHOT");
-			serializer.attribute(null, "dataSet", formId);
+			serializer.attribute(null, "dataSet", mapping.getDataSetId());
 			serializer.attribute(null, "period", periodText);
 			serializer.attribute(null, "orgUnit", orgUnit);
 
 			for (String element : dataValues.keySet()) {
 				serializer.startTag(null, "dataValue");
-				serializer.attribute(null, "dataElement", element);
+				String testing1 = mapping.getPipedElementId(element);
+				serializer.attribute(null, "dataElement", mapping.getPipedElementId(element));
 				serializer.attribute(null, "value", dataValues.get(element));
 				serializer.endTag(null, "dataValue");
 			}
@@ -100,18 +95,6 @@ class PipedMessage extends AggregateMessage {
 		}
 		return writer.toString();
 	}
-
-	@Override
-	public AggregateMessage convert() {
-		PipedMessage convertedMsg = new PipedMessage(this);		
-		DhisMappingHandler dhisMapping = new DhisMappingHandler();
-		convertedMsg.formId = dhisMapping.getDataSetUUID(convertedMsg.formId);
-		convertedMsg.orgUnit = dhisMapping.getOrgUnitID(convertedMsg.orgUnit);
-		for (String element : this.dataValues.keySet()) {
-			convertedMsg.dataValues.put(dhisMapping.getDataElementID(element),this.dataValues.get(element));
-		}
-		return convertedMsg;
-	}	
 }
 
 /**
@@ -122,7 +105,6 @@ class PipedMessage extends AggregateMessage {
 class PairMessage extends AggregateMessage {
 	private static final String CLASS_TAG = PairMessage.class
 			.getCanonicalName();
-	private Map<String, String> dataValues;
 	private String date;
 
 	public PairMessage(String formId, String periodText,
@@ -140,21 +122,14 @@ class PairMessage extends AggregateMessage {
 		this(body);
 		this.date = date;
 	}
-	
-	public PairMessage(PairMessage pairMessage) {
-		this.formId = pairMessage.formId;
-		this.periodText = pairMessage.periodText;
-		this.dataValues = new HashMap<String, String>();
-		this.orgUnit = pairMessage.orgUnit;
-	}
 
 	public boolean parse() {
-		if (text == null || text.length() < 0) {
+		if (body == null || body.length() < 0) {
 			return false;
 		}
-		formId = text.split("\\s+")[0];
+		formId = body.split("\\s+")[0];
 
-		String rest = text.substring(formId.length());
+		String rest = body.substring(formId.length());
 		String elementValuePairs[] = rest.split(",", 1000);
 
 		for (int i = 0; i < elementValuePairs.length; i++) {
@@ -214,24 +189,12 @@ class PairMessage extends AggregateMessage {
 		}
 		return writer.toString();
 	}
-
-	@Override
-	public AggregateMessage convert() {
-		PairMessage convertedMsg = new PairMessage(this);		
-		DhisMappingHandler dhisMapping = new DhisMappingHandler();
-		convertedMsg.formId = dhisMapping.getDataSetUUID(convertedMsg.formId);
-		convertedMsg.orgUnit = dhisMapping.getOrgUnitID(convertedMsg.orgUnit);
-		for (String element : this.dataValues.keySet()) {
-			convertedMsg.dataValues.put(dhisMapping.getDataElementID(element),this.dataValues.get(element));
-		}
-		return convertedMsg;
-	}
 }
 
 public class AggregateMessageFactory {
 
 	private static final String PIPED_REGEX = "\\w+#\\w+#((\\w+\\|)*(\\w+))";
-	private static final String PAIR_REGEX = "\\w+\\s+((\\w+=\\w+\\,\\s*)*(\\w+=\\w+){1})";
+	private static final String PAIR_REGEX = "\\w+\\s+(((\\w+\\.\\w+=\\w+|\\w+=\\w+),\\s*)*((\\w+\\.\\w+=\\w+|\\w+=\\w+)){1})";
 
 	/**
 	 * Returns AggregateMessage according to the body

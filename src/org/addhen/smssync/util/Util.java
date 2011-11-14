@@ -568,9 +568,7 @@ public class Util {
 					if(aggregateMessage != null) {
 
 						aggregateMessage.parse();
-						AggregateMessage mappedMessage = aggregateMessage.convert();
-
-						String xml = mappedMessage.getXMLString();
+						String xml = aggregateMessage.getXMLString();
 
 						Messages messages = new Messages();
 						listMessages.add(messages);
