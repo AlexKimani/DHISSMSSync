@@ -12,32 +12,28 @@
     <!-- Dhis strings -->
     <string name="dhis_settings">Dhis settings</string>
     <!-- username setting -->
-    <string name="dialog_title_username">Username</string>
-    <string name="edittxt_username_summary">Username needed to post to dhis server</string>
-    <string name="edittxt_username_title">Username</string>
+    <string name="dialog_title_username">Login</string>
+    <string name="edittxt_username_summary">Login information for dhis server</string>
+    <string name="edittxt_username_title">Login</string>
+    <string name="login_changed">Login information has been changed</string>
     <!-- Password setting -->
     <string name="dialog_title_password">Password</string>
     <string name="edittxt_password_summary">Password needed to post to dhis server</string>
     <string name="edittxt_password_title">Password</string>
-    
+    <string name="password_changed">Password has been changed</string>
+    <string name="set_password">Set Password</string>    
+    <string name="password_set">Password has been set</string>
     <!-- Other strings -->
 	<string name="edittxt_website_pref">Enter The Sync URL</string>
 	<string name="edittxt_website_pref_summary">This is the website that will receive the text
 		messages.</string>
 	<string name="edittxt_website_pref_dialog_title">Enter the Sync URL</string>
-	<string name="edittxt_api_key_pref">Enter the Secret</string>
-	<string name="edittxt_api_key_pref_summary">If a secret/key has been specified at the website,
-		it will be required.</string>
-	<string name="edittxt_keyword_pref">Enter Keyword(s)</string>
 	<string name="edittxt_reply">Enter A Response Message</string>
 	<string name="edittxt_reply_title">A Response Message</string>
 	<string name="edittxt_reply_summary">The message to be sent to users.</string>
 	<string name="edittxt_reply_default">Your message has been received.Thank you.</string>
 	<string name="sms_sync_enabled">SMSSync Is Enabled</string>
 	<string name="sms_sync_disabled">SMSSync Disabled</string>
-	<string name="edittxt_keyword_hint">fire, crime, help, report,etc</string>
-	<string name="editxt_keyword_pref_summary">Specify what keywords that will be used to filter
-		the message sent to the gateway.</string>
 
 	<string name="general_settings">General Settings</string>
 
@@ -72,7 +68,7 @@
 	<string name="txt_task_check_delay_hint">Set how often SMSSync checks for a task to be
 		executed.</string>
 
-	<string name="app_name">SMSSync</string>
+	<string name="app_name">DhisSMSSync</string>
 	<string name="outbox">SMSSync Pending Messages</string>
 	<string name="version_status">Beta</string>
 	<string name="sms_status_success">SMSSync Message Sent</string>
