@@ -7,7 +7,7 @@ import java.util.Map;
 	// TODO Auto-generated constructor stub - setters/getters
 	public   String formId;
 	public   String periodText;
-	public   String orgUnit;
+	public   String orgUnit = "";
 	public	 Map<String, String> dataValues = new HashMap<String, String>();
 	protected String body;
 	

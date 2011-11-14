@@ -54,10 +54,11 @@ class PipedMessage extends AggregateMessage {
 
 		return true;
 	}
+	
 	public String getXMLString() {
 		StringWriter writer;
 		XmlSerializer serializer;
-
+		DhisMappingHandler mapping = new DhisMappingHandler(formId);
 		writer = new StringWriter();
 		serializer = Xml.newSerializer();
 		// start building xml file
@@ -65,17 +66,22 @@ class PipedMessage extends AggregateMessage {
 			// we set the FileOutputStream as output for the serializer, using
 			serializer.setOutput(writer);
 
+			
+			//TESING
+			String dsTest = mapping.getDataSetId();
 
 			// Data
+			
 			serializer.startTag(null, "dataValueSet");
 			serializer.attribute(null, "xmlns", "http://dhis2.org/schema/dxf/2.0-SNAPSHOT");
-			serializer.attribute(null, "dataSet", formId);
+			serializer.attribute(null, "dataSet", mapping.getDataSetId());
 			serializer.attribute(null, "period", periodText);
 			serializer.attribute(null, "orgUnit", orgUnit);
 
 			for (String element : dataValues.keySet()) {
 				serializer.startTag(null, "dataValue");
-				serializer.attribute(null, "dataElement", element);
+				String testing1 = mapping.getPipedElementId(element);
+				serializer.attribute(null, "dataElement", mapping.getPipedElementId(element));
 				serializer.attribute(null, "value", dataValues.get(element));
 				serializer.endTag(null, "dataValue");
 			}
