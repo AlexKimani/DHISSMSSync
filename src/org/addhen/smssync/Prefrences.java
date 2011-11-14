@@ -31,51 +31,72 @@ import android.content.SharedPreferences;
  */
 public class Prefrences {
 
-    public static int autoTime = 5;
+	/**
+	 * Dhis preferences
+	 */
+	public static String dhisLoginPref = "";
 
-    public static int taskCheckTime = 5;
+	
+	/**
+	 * Other preferences
+	 */
+	public static int autoTime = 5;
 
-    public static String website = "";
+	public static int taskCheckTime = 5;
 
-    public static String keyword = "";
+	public static String website = "";
 
-    public static String apiKey = "";
+	public static String reply = "";
 
-    public static String reply = "";
+	public static Boolean enabled = false;
 
-    public static Boolean enabled = false;
+	public static Boolean autoDelete = false;
 
-    public static Boolean autoDelete = false;
+	public static Boolean enableReply = false;
 
-    public static Boolean enableReply = false;
+	public static Boolean enableReplyFrmServer = false;
 
-    public static Boolean enableReplyFrmServer = false;
-    
-    public static Boolean enableAutoSync = false;
+	public static Boolean enableAutoSync = false;
 
-    public static Boolean enableTaskCheck = false;
+	public static Boolean enableTaskCheck = false;
 
-    public static final String PREF_NAME = "SMS_SYNC_PREF";
+	public static final String PREF_NAME = "SMS_SYNC_PREF";
 
-    /**
-     * Load the value of the settings / preference variable.
-     * 
-     * @param Context context - The context of the calling activity.
-     * @return void
-     */
-    public static void loadPreferences(Context context) {
-        final SharedPreferences settings = context.getSharedPreferences(PREF_NAME, 0);
+	/**
+	 * Load the value of the settings / preference variable.
+	 * 
+	 * @param Context
+	 *            context - The context of the calling activity.
+	 * @return void
+	 */
+	public static void loadPreferences(Context context) {
+		final SharedPreferences settings = context.getSharedPreferences(
+				PREF_NAME, 0);
 
-        website = settings.getString("WebsitePref", "");
-        keyword = settings.getString("Keyword", "");
-        apiKey = settings.getString("ApiKey", "");
-        reply = settings.getString("ReplyPref", context.getString(R.string.edittxt_reply_default));
-        enabled = settings.getBoolean("EnableSmsSync", false);
-        autoDelete = settings.getBoolean("EnableAutoDelete", false);
-        enableReply = settings.getBoolean("EnableReply", false);
-        enableReplyFrmServer = settings.getBoolean("EnableReplyFrmServer", false);
-        enableAutoSync = settings.getBoolean("AutoSync", false);
-        autoTime = settings.getInt("AutoTime", autoTime);
-        taskCheckTime = settings.getInt("taskCheck", taskCheckTime);
-    }
+		/**
+		 * Dhis preferences
+		 */
+		dhisLoginPref = settings.getString("dhisLoginPref", "");
+
+
+		/**
+		 * Other preferences
+		 */
+		website = settings.getString("WebsitePref", "http://apps.dhis2.org/demo/api/dataValueSets/");
+		
+		reply = settings.getString("ReplyPref",
+				context.getString(R.string.edittxt_reply_default));
+		enabled = settings.getBoolean("EnableSmsSync", false);
+		autoDelete = settings.getBoolean("EnableAutoDelete", false);
+		enableReply = settings.getBoolean("EnableReply", false);
+		enableReplyFrmServer = settings.getBoolean("EnableReplyFrmServer",
+				false);
+		enableAutoSync = settings.getBoolean("AutoSync", false);
+		autoTime = settings.getInt("AutoTime", autoTime);
+		taskCheckTime = settings.getInt("taskCheck", taskCheckTime);
+	}
+	
+	
+
+
 }
