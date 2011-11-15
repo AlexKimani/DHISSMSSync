@@ -11,7 +11,7 @@
 <resources>
     <!-- Dhis strings -->
     <string name="dhis_settings">Dhis settings</string>
-    <!-- username setting -->
+    <!-- login setting -->
     <string name="dialog_title_login">Login</string>
     <string name="edittxt_login_summary">Login information for dhis server</string>
     <string name="edittxt_login_title">Login</string>
