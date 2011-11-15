@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 
+import org.addhen.smssync.MainApplication;
+import org.addhen.smssync.Prefrences;
+import org.addhen.smssync.services.SmsReceiverService;
 import org.addhen.smssync.util.Util;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -48,6 +51,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 public class MainHttpClient {
@@ -60,7 +64,7 @@ public class MainHttpClient {
 
 	private int timeoutSocket = 60000;
 
-	private static final String CLASS_TAG = MainHttpClient.class.getCanonicalName();
+	private static final String CLASS_TAG = MainHttpClient.class.getSimpleName();
 
 	public MainHttpClient() {
 		httpParameters = new BasicHttpParams();
@@ -118,9 +122,12 @@ public class MainHttpClient {
 	 * @return
 	 */
 	public static boolean postSmsToWebService(String url, String xml, Context context) {
+		
+		Prefrences.loadPreferences(context);
+		String encoding = Prefrences.dhisLoginPref;
+
 		// Create a new HttpClient and Post Header
 		HttpPost httppost = new HttpPost(url);
-		String encoding = Util.base64encode("admin:district".getBytes());
 		httppost.setHeader("Authorization", "Basic " + encoding);
 
 		try {
@@ -216,4 +223,8 @@ public class MainHttpClient {
 			return null;
 		}
 	}
+	
+	
+	
+
 }
