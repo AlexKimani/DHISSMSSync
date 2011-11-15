@@ -15,14 +15,17 @@ import org.xml.sax.SAXException;
 
 import android.os.Environment;
 
-public class DhisMappingHandler {
-	private static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/dhismappingfiles/";
+/**
+ * @author 
+ *
+ */
+public abstract class DhisMappingHandler {
 	private static final String DATASET_FILE = "dataSets.xml";
-	private static final String CLASS_TAG = DhisMappingHandler.class.getCanonicalName();
+	private static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/dhismappingfiles/";
+	private String dataSetId = null;
 
 	protected Document datasetDoc;
 	protected Document elementsDoc;
-	protected String dataSetId = null;
 
 	public DhisMappingHandler(String formId) {
 		datasetDoc = initDoc(DATASET_DIRECTORY_PATH + DATASET_FILE);
@@ -37,7 +40,7 @@ public class DhisMappingHandler {
 		Element elem = (Element) node;
 		dataSetId  =  elem.getAttribute("id");
 
-		elementsDoc = initDoc(DATASET_DIRECTORY_PATH + dataSetId);
+		elementsDoc = initDoc(DATASET_DIRECTORY_PATH + dataSetId + ".xml");
 	}
 
 	private Document initDoc(String fileName) {
@@ -67,23 +70,67 @@ public class DhisMappingHandler {
 	public String getDataSetId() {
 		return dataSetId;
 	}
-	
 
-	public String getPipedElementId(String element) {
+	public abstract String getElementId(String element);
+	public abstract String getComboId(String element);
+	public abstract boolean isCombo(String element);
+}
+
+
+
+class SerialMappingHandler extends DhisMappingHandler {
+
+	public SerialMappingHandler(String formId) {
+		super(formId);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public String getElementId(String element) {
 		NodeList dataSetList = elementsDoc.getElementsByTagName("dataElement"); 
-		
+
 		int counter = 0;
-		int elementNumber = Integer.parseInt(element);
-		
+		int elementNumber = Integer.parseInt(element) + 1;
+
 		for (int i = 0; i < dataSetList.getLength(); i++) {
 			Node elementNode = dataSetList.item(i);
 			Element elementElem = (Element) elementNode;
 			NodeList comboList = elementElem.getElementsByTagName("categoryOptionCombo");
-			
+
 			if(comboList.getLength() == 0) {
 				counter++;
 				if(elementNumber == counter) {
 					return elementElem.getAttribute("id");
+				}
+			} else {
+				for (int j = 0; j < comboList.getLength(); j++) {
+					counter++;
+					if(elementNumber == counter) {
+						return elementElem.getAttribute("id");
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	@Override
+	public String getComboId(String element) {
+		NodeList dataSetList = elementsDoc.getElementsByTagName("dataElement"); 
+
+		int counter = 0;
+		int elementNumber = Integer.parseInt(element) + 1;
+
+		for (int i = 0; i < dataSetList.getLength(); i++) {
+			Node elementNode = dataSetList.item(i);
+			Element elementElem = (Element) elementNode;
+			NodeList comboList = elementElem.getElementsByTagName("categoryOptionCombo");
+
+			if(comboList.getLength() == 0) {
+				counter++;
+				if(elementNumber == counter) {
+					return null;
 				}
 			} else {
 				for (int j = 0; j < comboList.getLength(); j++) {
@@ -96,11 +143,120 @@ public class DhisMappingHandler {
 				}
 			}
 		}
-		
+
 		return null;
 	}
-		
+
+
+	@Override
+	public boolean isCombo(String element) {
+		NodeList dataSetList = elementsDoc.getElementsByTagName("dataElement"); 
+
+		int counter = 0;
+		int elementNumber = Integer.parseInt(element) + 1;
+
+		for (int i = 0; i < dataSetList.getLength(); i++) {
+			Node elementNode = dataSetList.item(i);
+			Element elementElem = (Element) elementNode;
+			NodeList comboList = elementElem.getElementsByTagName("categoryOptionCombo");
+
+			if(comboList.getLength() == 0) {
+				counter++;
+				if(elementNumber == counter) {
+					return false;
+				}
+			} else {
+				for (int j = 0; j < comboList.getLength(); j++) {
+					counter++;
+					if(elementNumber == counter) {
+						return true;
+					}
+				}
+			}
+		}
+
+		return false;
+	}
 }
 
+class IndexedMappingHandler extends DhisMappingHandler {
 
+	public IndexedMappingHandler(String formId) {
+		super(formId);
+		// TODO Auto-generated constructor stub
+	}
 
+	@Override
+	public String getElementId(String element) {
+		NodeList dataSetList = elementsDoc.getElementsByTagName("dataElement"); 
+
+		int elementNumber;
+
+		if(element.contains(".")) {
+			elementNumber = Integer.parseInt(element.split(".")[0]);
+		} else {
+			elementNumber = Integer.parseInt(element);
+		}
+		elementNumber =  elementNumber -1;
+
+		if(elementNumber < dataSetList.getLength() ) {
+			Node elementNode = dataSetList.item(elementNumber);
+			Element elementElem = (Element) elementNode;
+			return elementElem.getAttribute("id");
+		}
+
+		return null;
+	}
+
+	@Override
+	public String getComboId(String element) {
+		if(element.contains(".")) {
+			NodeList dataSetList = elementsDoc.getElementsByTagName("dataElement"); 
+
+			int elementNumber = Integer.parseInt(element.split(".")[0]);
+			int comboNumber = Integer.parseInt(element.split(".")[1]);
+			elementNumber =  elementNumber -1;
+			comboNumber =  comboNumber -1;
+
+			if(elementNumber < dataSetList.getLength() ) {
+				Node elementNode = dataSetList.item(elementNumber);
+				Element elementElem = (Element) elementNode;
+				NodeList comboList = elementElem.getElementsByTagName("categoryOptionCombo");
+				if (comboNumber < comboList.getLength()) {
+					Node comboNode = comboList.item(comboNumber);
+					Element comboElem = (Element) comboNode;
+					return comboElem.getAttribute("id");
+				}
+			}
+		} else {
+			return null;
+		}
+
+		return null;
+	}
+
+	@Override
+	public boolean isCombo(String element) {
+		if(element.contains(".")) {
+			NodeList dataSetList = elementsDoc.getElementsByTagName("dataElement"); 
+
+			int elementNumber = Integer.parseInt(element.split(".")[0]);
+			int comboNumber = Integer.parseInt(element.split(".")[1]);
+			elementNumber =  elementNumber -1;
+			comboNumber =  comboNumber -1;
+
+			if(elementNumber < dataSetList.getLength() ) {
+				Node elementNode = dataSetList.item(elementNumber);
+				Element elementElem = (Element) elementNode;
+				NodeList comboList = elementElem.getElementsByTagName("categoryOptionCombo");
+				if (comboNumber < comboList.getLength()) {
+					return true;
+				}
+			}
+		} else {
+			return false;
+		}
+
+		return false;
+	}
+}
