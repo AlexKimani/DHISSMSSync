@@ -39,10 +39,10 @@
     <PreferenceCategory android:title="@string/dhis_settings" >
 
         <org.addhen.smssync.util.LoginPreferenceDialog
-            android:dialogTitle="@string/dialog_title_username"
+            android:dialogTitle="@string/dialog_title_login"
             android:key="dhis_login"
-            android:summary="@string/edittxt_username_summary"
-            android:title="@string/edittxt_username_title" />
+            android:summary="@string/edittxt_login_summary"
+            android:title="@string/edittxt_login_title" />
 
         
     </PreferenceCategory>
