@@ -60,7 +60,7 @@ public class MainHttpClient {
 
 	private int timeoutSocket = 60000;
 
-	private static final String CLASS_TAG = Util.class.getSimpleName();
+	private static final String CLASS_TAG = MainHttpClient.class.getCanonicalName();
 
 	public MainHttpClient() {
 		httpParameters = new BasicHttpParams();

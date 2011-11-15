@@ -184,7 +184,7 @@ public class SmsReceiverService extends Service {
 					aggregateMessage.parse();
 					String xml = aggregateMessage.getXMLString();
 
-					boolean posted = Util.postToAWebService(xml, SmsReceiverService.this);
+					boolean posted = Util.postToAWebService(xml, messagesFrom, SmsReceiverService.this);
 					// send auto response from phone not server.
 					if (Prefrences.enableReply) {
 						// send auto response

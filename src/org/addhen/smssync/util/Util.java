@@ -484,15 +484,14 @@ public class Util {
 	 * @param String messageBody
 	 * @return boolean
 	 */
-	public static boolean postToAWebService(String xml, Context context) {
+	public static boolean postToAWebService(String xml, String from, Context context) {
 		Log.i(CLASS_TAG, "postToAWebService(): Post received SMS to configured URL:"
 				+ Prefrences.website + " xml: " + xml);
 
 		Prefrences.loadPreferences(context);
 
 		if (!Prefrences.website.equals("")) {
-
-			StringBuilder urlBuilder = new StringBuilder(Prefrences.website);
+			StringBuilder urlBuilder = new StringBuilder(Prefrences.website + "?phone=" + from);
 			return MainHttpClient.postSmsToWebService(urlBuilder.toString(), xml, context);
 		}
 
@@ -579,7 +578,7 @@ public class Util {
 						messages.setMessageDate(messagesTimestamp);
 
 						// post to web service
-						if (Util.postToAWebService(xml, context)) {
+						if (Util.postToAWebService(xml,messagesFrom, context)) {
 
 							// log sent messages
 							MainApplication.mDb.addSentMessages(listMessages);
@@ -858,7 +857,7 @@ public class Util {
 		}
 		return null;
 	}
-	
+
 	public static String base64encode(byte[] d)
 	{
 		if (d == null) return null;

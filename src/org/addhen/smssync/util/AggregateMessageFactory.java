@@ -56,32 +56,26 @@ class PipedMessage extends AggregateMessage {
 	}
 	
 	public String getXMLString() {
-		StringWriter writer;
-		XmlSerializer serializer;
-		DhisMappingHandler mapping = new DhisMappingHandler(formId);
-		writer = new StringWriter();
-		serializer = Xml.newSerializer();
+		StringWriter writer  = new StringWriter();;
+		XmlSerializer serializer = Xml.newSerializer();
+		DhisMappingHandler mapping = new SerialMappingHandler(formId);
+
 		// start building xml file
 		try {
 			// we set the FileOutputStream as output for the serializer, using
 			serializer.setOutput(writer);
-
-			
-			//TESING
-			String dsTest = mapping.getDataSetId();
-
 			// Data
-			
 			serializer.startTag(null, "dataValueSet");
 			serializer.attribute(null, "xmlns", "http://dhis2.org/schema/dxf/2.0-SNAPSHOT");
 			serializer.attribute(null, "dataSet", mapping.getDataSetId());
 			serializer.attribute(null, "period", periodText);
-			serializer.attribute(null, "orgUnit", orgUnit);
 
 			for (String element : dataValues.keySet()) {
 				serializer.startTag(null, "dataValue");
-				String testing1 = mapping.getPipedElementId(element);
-				serializer.attribute(null, "dataElement", mapping.getPipedElementId(element));
+				serializer.attribute(null, "dataElement", mapping.getElementId(element));
+				if(mapping.isCombo(element)) {
+					serializer.attribute(null, "categoryOptionCombo", mapping.getComboId(element));
+				}
 				serializer.attribute(null, "value", dataValues.get(element));
 				serializer.endTag(null, "dataValue");
 			}
@@ -97,7 +91,7 @@ class PipedMessage extends AggregateMessage {
 }
 
 /**
- * Class KeysMessage
+ * Class PairMessage
  * @author 
  *
  */
@@ -155,27 +149,26 @@ class PairMessage extends AggregateMessage {
 	}
 	
 	public String getXMLString() {
-		StringWriter writer;
-		XmlSerializer serializer;
+		StringWriter writer  = new StringWriter();;
+		XmlSerializer serializer = Xml.newSerializer();
+		DhisMappingHandler mapping = new IndexedMappingHandler(formId);
 
-		writer = new StringWriter();
-		serializer = Xml.newSerializer();
 		// start building xml file
 		try {
 			// we set the FileOutputStream as output for the serializer, using
 			serializer.setOutput(writer);
-
 			// Data
 			serializer.startTag(null, "dataValueSet");
 			serializer.attribute(null, "xmlns", "http://dhis2.org/schema/dxf/2.0-SNAPSHOT");
-			serializer.attribute(null, "dataSet", formId);
+			serializer.attribute(null, "dataSet", mapping.getDataSetId());
 			serializer.attribute(null, "period", periodText);
-			serializer.attribute(null, "orgUnit", orgUnit);
 
 			for (String element : dataValues.keySet()) {
 				serializer.startTag(null, "dataValue");
-				// gets the correct list of dataelements, and gets item
-				serializer.attribute(null, "dataElement", element);
+				serializer.attribute(null, "dataElement", mapping.getElementId(element));
+				if(mapping.isCombo(element)) {
+					serializer.attribute(null, "categoryOptionCombo", mapping.getComboId(element));
+				}
 				serializer.attribute(null, "value", dataValues.get(element));
 				serializer.endTag(null, "dataValue");
 			}
