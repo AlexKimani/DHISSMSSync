@@ -12,17 +12,11 @@
     <!-- Dhis strings -->
     <string name="dhis_settings">Dhis settings</string>
     <!-- username setting -->
-    <string name="dialog_title_username">Login</string>
-    <string name="edittxt_username_summary">Login information for dhis server</string>
-    <string name="edittxt_username_title">Login</string>
+    <string name="dialog_title_login">Login</string>
+    <string name="edittxt_login_summary">Login information for dhis server</string>
+    <string name="edittxt_login_title">Login</string>
     <string name="login_changed">Login information has been changed</string>
-    <!-- Password setting -->
-    <string name="dialog_title_password">Password</string>
-    <string name="edittxt_password_summary">Password needed to post to dhis server</string>
-    <string name="edittxt_password_title">Password</string>
-    <string name="password_changed">Password has been changed</string>
-    <string name="set_password">Set Password</string>    
-    <string name="password_set">Password has been set</string>
+    
     <!-- Other strings -->
 	<string name="edittxt_website_pref">Enter The Sync URL</string>
 	<string name="edittxt_website_pref_summary">This is the website that will receive the text
