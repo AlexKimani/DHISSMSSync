@@ -970,7 +970,7 @@ public class Util {
 		for (String url : list) {
 			String[] parts = url.split("/");
 			
-			String setContent = MainHttpClient.getFromWebService(url,context);
+			String setContent = MainHttpClient.getFromWebService(url+".xml",context);
 			if(!createFile(setContent, DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
 				return false;
 			}
