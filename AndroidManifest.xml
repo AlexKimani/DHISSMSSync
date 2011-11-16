@@ -9,8 +9,8 @@
 	If you have questions regarding the use of this file, please contact Ushahidi 
 	developers at team@ushahidi.com. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.addhen.smssync" android:versionCode="10"
-	android:versionName="1.0.9">
+	package="org.addhen.smssync" android:versionCode="11"
+	android:versionName="0.0.1">
 	<uses-permission android:name="android.permission.RECEIVE_SMS" />
 	<uses-permission android:name="android.permission.READ_SMS" />
 	<uses-permission android:name="android.permission.SEND_SMS" />
