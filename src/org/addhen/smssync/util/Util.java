@@ -22,8 +22,11 @@ package org.addhen.smssync.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -42,9 +45,11 @@ import org.addhen.smssync.R;
 import org.addhen.smssync.data.Database;
 import org.addhen.smssync.data.Messages;
 import org.addhen.smssync.net.MainHttpClient;
+import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -73,6 +78,17 @@ import android.widget.Toast;
  * @author eyedol
  */
 public class Util {
+
+	/**
+	 * Dhis specific
+	 */
+	public static final String DHIS_MAPPING_FILES_PATH = "/Android/data/org.addhen.smssync/dhismappingfiles/";
+	public static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + Util.DHIS_MAPPING_FILES_PATH;
+	public static final String DATASET_FILE = "dataSets.xml";
+	public static final String DATASET_FILE_URL = "http://apps.dhis2.org/demo/api/dataSets.xml";
+	/**
+	 * Other
+	 */
 
 	public static final Uri MMS_SMS_CONTENT_URI = Uri.parse("content://mms-sms/");
 
@@ -655,7 +671,7 @@ public class Util {
 
 			uriBuilder.append("?task=send");
 
-			String response = MainHttpClient.getFromWebService(uriBuilder.toString());
+			String response = MainHttpClient.getFromWebService(uriBuilder.toString(),context);
 			Log.d(CLASS_TAG, "TaskCheckResponse: " + response);
 			String task = "";
 			String secret = "";
@@ -892,5 +908,73 @@ public class Util {
 			dest[idx] = (byte)'=';
 		}
 		return new String(dest);
+	}
+
+	public static boolean checkExternalMediaMounted() {
+		boolean mExternalStorageAvailable = false;
+		boolean mExternalStorageWriteable = false;
+		String state = Environment.getExternalStorageState();
+
+		if (Environment.MEDIA_MOUNTED.equals(state)) {
+			// We can read and write the media
+			mExternalStorageAvailable = mExternalStorageWriteable = true;
+		} else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+			// We can only read the media
+			mExternalStorageAvailable = true;
+			mExternalStorageWriteable = false;
+		} else {
+			// Something else is wrong. It may be one of many other states, but all we need
+			//  to know is we can neither read nor write
+			mExternalStorageAvailable = mExternalStorageWriteable = false;
+		}
+		return (mExternalStorageAvailable && mExternalStorageWriteable);
+	}
+
+	public static boolean createFile(String content, String path, String filename) {
+		if(!checkExternalMediaMounted()) {
+			return false;
+		}
+		
+		File folder = new File(path);
+		if(!folder.exists()) {
+			folder.mkdirs();
+		}
+
+		File file = new File(path+filename);
+		if(file.exists()) {
+			file.delete();
+		}
+		try {
+			file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(file);
+			OutputStreamWriter osw = new OutputStreamWriter(fos); 
+			osw.write(content);
+			osw.flush();
+			osw.close();
+			return true;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public static boolean getDhisMappingFiles(Context context) {
+		String content = MainHttpClient.getFromWebService(DATASET_FILE_URL,context);
+		if(!createFile(content, DATASET_DIRECTORY_PATH, DATASET_FILE)) {
+			return false;
+		}
+		
+		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls(DATASET_DIRECTORY_PATH+DATASET_FILE);
+		
+		for (String url : list) {
+			String[] parts = url.split("/");
+			
+			String setContent = MainHttpClient.getFromWebService(url,context);
+			if(!createFile(setContent, DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

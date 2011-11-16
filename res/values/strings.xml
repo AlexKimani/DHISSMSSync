@@ -15,8 +15,12 @@
     <string name="dialog_title_login">Login</string>
     <string name="edittxt_login_summary">Login information for dhis server</string>
     <string name="edittxt_login_title">Login</string>
+    <!-- dhis toast strings -->
     <string name="login_changed">Login information has been changed</string>
-    
+    <string name="downloading_mapping_files">Downloading mapping files</string>
+    <!-- dhis menu strings -->
+    <string name="dhis_export_to_xml">Export all pending to xml</string>
+    <string name="dhis_get_mapping_files">Update dhis datasets</string>
     <!-- Other strings -->
 	<string name="edittxt_website_pref">Enter The Sync URL</string>
 	<string name="edittxt_website_pref_summary">This is the website that will receive the text

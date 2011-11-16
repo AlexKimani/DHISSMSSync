@@ -2,11 +2,13 @@ package org.addhen.smssync.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.addhen.smssync.R;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,30 +22,56 @@ import android.os.Environment;
  *
  */
 public abstract class DhisMappingHandler {
-	private static final String DATASET_FILE = "dataSets.xml";
-	private static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/dhismappingfiles/";
 	private String dataSetId = null;
 
 	protected Document datasetDoc;
 	protected Document elementsDoc;
 
-	public DhisMappingHandler(String formId) {
-		datasetDoc = initDoc(DATASET_DIRECTORY_PATH + DATASET_FILE);
-		NodeList dataSetList = datasetDoc.getElementsByTagName("dataSet");
-
-		int index = Integer.parseInt(formId)-1;
-		if(index < 1 || index > dataSetList.getLength()) {
-			dataSetId = null;
-		} 
-
-		Node node = dataSetList.item(index);
-		Element elem = (Element) node;
-		dataSetId  =  elem.getAttribute("id");
-
-		elementsDoc = initDoc(DATASET_DIRECTORY_PATH + dataSetId + ".xml");
+	//TODO create own method for this! (to return if success) 
+	public DhisMappingHandler() {
+	
 	}
+	
+	public boolean init(String formId) {
+		if(Util.checkExternalMediaMounted()) {
+			if((datasetDoc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE)) == null) {
+				return false;
+			}
+			
+			NodeList dataSetList = datasetDoc.getElementsByTagName("dataSet");
 
-	private Document initDoc(String fileName) {
+			int index = Integer.parseInt(formId)-1;
+			if(index < 1 || index > dataSetList.getLength()) {
+				return false;
+			} 
+
+			Node node = dataSetList.item(index);
+			Element elem = (Element) node;
+			dataSetId  =  elem.getAttribute("id");
+
+			if((elementsDoc = initDoc(Util.DATASET_DIRECTORY_PATH + dataSetId + ".xml")) == null) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public static ArrayList<String> getDatasetsUrls(String dataSetsFile) {
+		Document doc = initDoc(dataSetsFile);
+		NodeList dataSetList = doc.getElementsByTagName("dataSet");
+		ArrayList<String> list = new ArrayList<String>();
+		
+		for (int i = 0; i < dataSetList.getLength(); i++) {
+			Node elementNode = dataSetList.item(i);
+			Element elementElem = (Element) elementNode;
+			list.add(elementElem.getAttribute("href"));
+		}
+		
+		return list;
+	}
+	
+	private static Document initDoc(String fileName) {
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db;
 		Document doc = null;
@@ -55,12 +83,15 @@ public abstract class DhisMappingHandler {
 		} catch (ParserConfigurationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		} catch (SAXException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return null;
 		}
 
 		return doc;
@@ -80,8 +111,8 @@ public abstract class DhisMappingHandler {
 
 class SerialMappingHandler extends DhisMappingHandler {
 
-	public SerialMappingHandler(String formId) {
-		super(formId);
+	public SerialMappingHandler() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
@@ -181,8 +212,8 @@ class SerialMappingHandler extends DhisMappingHandler {
 
 class IndexedMappingHandler extends DhisMappingHandler {
 
-	public IndexedMappingHandler(String formId) {
-		super(formId);
+	public IndexedMappingHandler() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
