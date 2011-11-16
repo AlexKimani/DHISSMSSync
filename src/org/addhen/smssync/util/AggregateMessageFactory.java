@@ -58,7 +58,10 @@ class PipedMessage extends AggregateMessage {
 	public String getXMLString() {
 		StringWriter writer  = new StringWriter();;
 		XmlSerializer serializer = Xml.newSerializer();
-		DhisMappingHandler mapping = new SerialMappingHandler(formId);
+		DhisMappingHandler mapping = new SerialMappingHandler();
+		if(!mapping.init(formId)) {
+			return null;
+		}
 
 		// start building xml file
 		try {
@@ -151,7 +154,8 @@ class PairMessage extends AggregateMessage {
 	public String getXMLString() {
 		StringWriter writer  = new StringWriter();;
 		XmlSerializer serializer = Xml.newSerializer();
-		DhisMappingHandler mapping = new IndexedMappingHandler(formId);
+		DhisMappingHandler mapping = new IndexedMappingHandler();
+		mapping.init(formId);
 
 		// start building xml file
 		try {

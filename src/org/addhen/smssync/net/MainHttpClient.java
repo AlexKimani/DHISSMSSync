@@ -161,17 +161,20 @@ public class MainHttpClient {
 	 * @param String url - The Callback URL to do the HTTP GET
 	 * @return String - the HTTP response
 	 */
-	public static String getFromWebService(String url) {
+	public static String getFromWebService(String url, Context context) {
 
 		// Create a new HttpClient and Post Header
 		final HttpGet httpGet = new HttpGet(url);
-		httpGet.addHeader("User-Agent", "SMSSync-Android/1.0)");
+		Prefrences.loadPreferences(context);
+		String encoding = Prefrences.dhisLoginPref;
+		httpGet.setHeader("Authorization", "Basic " + encoding);
 
 		try {
 			// Execute HTTP Get Request
 			HttpResponse response = httpclient.execute(httpGet);
 
-			if (response.getStatusLine().getStatusCode() == 200) {
+			if (response.getStatusLine().getStatusCode() >= 200 && response.getStatusLine().getStatusCode() < 300) {
+		
 				return getText(response);
 
 			} else {
@@ -188,6 +191,7 @@ public class MainHttpClient {
 	public static String getText(HttpResponse response) {
 		String text = "";
 		try {
+			
 			text = getText(response.getEntity().getContent());
 		} catch (final Exception ex) {
 
