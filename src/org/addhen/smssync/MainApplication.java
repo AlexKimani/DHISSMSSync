@@ -38,11 +38,10 @@ public class MainApplication extends Application {
 
     public static MainHttpClient mApi;
     
-
     @Override
     public void onCreate() {
         super.onCreate();
-
+        
         // Open database connection when the application starts.
         mDb = new Database(this);
         mDb.open();

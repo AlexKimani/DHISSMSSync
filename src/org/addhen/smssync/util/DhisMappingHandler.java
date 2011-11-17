@@ -29,49 +29,62 @@ public abstract class DhisMappingHandler {
 
 	//TODO create own method for this! (to return if success) 
 	public DhisMappingHandler() {
-	
+
 	}
-	
+
 	public boolean init(String formId) {
-		if(Util.checkExternalMediaMounted()) {
-			if((datasetDoc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE)) == null) {
-				return false;
-			}
-			
-			NodeList dataSetList = datasetDoc.getElementsByTagName("dataSet");
-
-			int index = Integer.parseInt(formId)-1;
-			if(index < 1 || index > dataSetList.getLength()) {
-				return false;
-			} 
-
-			Node node = dataSetList.item(index);
-			Element elem = (Element) node;
-			dataSetId  =  elem.getAttribute("id");
-
-			if((elementsDoc = initDoc(Util.DATASET_DIRECTORY_PATH + dataSetId + ".xml")) == null) {
-				return false;
-			}
-			return true;
+		if((datasetDoc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE)) == null) {
+			return false;
 		}
-		return false;
+
+		NodeList dataSetList = datasetDoc.getElementsByTagName("dataSet");
+
+		int index = Integer.parseInt(formId)-1;
+		if(index < 1 || index > dataSetList.getLength()) {
+			return false;
+		} 
+
+		Node node = dataSetList.item(index);
+		Element elem = (Element) node;
+		dataSetId  =  elem.getAttribute("id");
+
+		if((elementsDoc = initDoc(Util.DATASET_DIRECTORY_PATH + dataSetId + ".xml")) == null) {
+			return false;
+		}
+		return true;
+
 	}
-	
-	public static ArrayList<String> getDatasetsUrls(String dataSetsFile) {
-		Document doc = initDoc(dataSetsFile);
+
+	public static ArrayList<String> getDatasetsUrls() {
+		Document doc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
 		NodeList dataSetList = doc.getElementsByTagName("dataSet");
 		ArrayList<String> list = new ArrayList<String>();
-		
+
 		for (int i = 0; i < dataSetList.getLength(); i++) {
-			Node elementNode = dataSetList.item(i);
-			Element elementElem = (Element) elementNode;
+			Node setNode = dataSetList.item(i);
+			Element elementElem = (Element) setNode;
 			list.add(elementElem.getAttribute("href"));
 		}
-		
+
 		return list;
 	}
-	
+
+	public static String getDataSetId(String formId) {
+		Document doc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
+		NodeList dataSetList = doc.getElementsByTagName("dataSet");
+		
+		int setNumber = Integer.parseInt(formId)-1;
+
+		Node setNode = dataSetList.item(setNumber);
+		Element setElem = (Element) setNode;
+		return setElem.getAttribute("id");
+	}
+
 	private static Document initDoc(String fileName) {
+		if(!Util.checkExternalMediaMounted()) {
+			return null;
+		}
+		
 		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 		DocumentBuilder db;
 		Document doc = null;

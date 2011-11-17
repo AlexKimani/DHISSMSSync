@@ -31,6 +31,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -82,14 +83,15 @@ public class Util {
 	/**
 	 * Dhis specific
 	 */
-	public static final String DHIS_MAPPING_FILES_PATH = "/Android/data/org.addhen.smssync/dhismappingfiles/";
-	public static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + Util.DHIS_MAPPING_FILES_PATH;
+
+	public static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/Android/data/" + "org.addhen.smssync" + "/dhismappingfiles/";
 	public static final String DATASET_FILE = "dataSets.xml";
 	public static final String DATASET_FILE_URL = "http://apps.dhis2.org/demo/api/dataSets.xml";
+	public static final String EXPORT_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/dhisexport/";
+
 	/**
 	 * Other
 	 */
-
 	public static final Uri MMS_SMS_CONTENT_URI = Uri.parse("content://mms-sms/");
 
 	public static final Uri THREAD_ID_CONTENT_URI = Uri.withAppendedPath(MMS_SMS_CONTENT_URI,
@@ -580,36 +582,30 @@ public class Util {
 
 					// check if right format and if match post it
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					if(aggregateMessage != null) {
+					aggregateMessage.parse();
+					String xml = aggregateMessage.getXMLString();
 
-						aggregateMessage.parse();
-						String xml = aggregateMessage.getXMLString();
+					Messages messages = new Messages();
+					listMessages.add(messages);
 
-						Messages messages = new Messages();
-						listMessages.add(messages);
+					messages.setMessageId(messageId);
+					messages.setMessageFrom(messagesFrom);
+					messages.setMessageBody(messagesBody);
+					messages.setMessageDate(messagesTimestamp);
 
-						messages.setMessageId(messageId);
-						messages.setMessageFrom(messagesFrom);
-						messages.setMessageBody(messagesBody);
-						messages.setMessageDate(messagesTimestamp);
+					// post to web service
+					if (Util.postToAWebService(xml,messagesFrom, context)) {
 
-						// post to web service
-						if (Util.postToAWebService(xml,messagesFrom, context)) {
+						// log sent messages
+						MainApplication.mDb.addSentMessages(listMessages);
 
-							// log sent messages
-							MainApplication.mDb.addSentMessages(listMessages);
-
-							// if it successfully pushes message, delete message
-							// from db
-							MainApplication.mDb.deleteMessagesById(messageId);
-							deleted = 0;
-						} else {
-							deleted = 1;
-						}
+						// if it successfully pushes message, delete message
+						// from db
+						MainApplication.mDb.deleteMessagesById(messageId);
+						deleted = 0;
 					} else {
 						deleted = 1;
 					}
-
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
@@ -934,7 +930,7 @@ public class Util {
 		if(!checkExternalMediaMounted()) {
 			return false;
 		}
-		
+
 		File folder = new File(path);
 		if(!folder.exists()) {
 			folder.mkdirs();
@@ -964,17 +960,91 @@ public class Util {
 		if(!createFile(content, DATASET_DIRECTORY_PATH, DATASET_FILE)) {
 			return false;
 		}
-		
-		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls(DATASET_DIRECTORY_PATH+DATASET_FILE);
-		
+
+		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls();
+
 		for (String url : list) {
 			String[] parts = url.split("/");
-			
+
 			String setContent = MainHttpClient.getFromWebService(url + ".xml",context);
 			if(!createFile(setContent, DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
 				return false;
 			}
 		}
 		return true;
+	}
+
+	public static int exportToXMLFile(Context context, int messagesId) {
+		Log.i(CLASS_TAG, "exportToXMLFile(): export pending messages to XML file");
+		Cursor cursor;
+		// check if it should export by id
+		if (messagesId > 0) {
+			cursor = MainApplication.mDb.fetchMessagesById(messagesId);
+		} else {
+			cursor = MainApplication.mDb.fetchAllMessages();
+		}
+
+		String messagesFrom;
+		String messagesBody;
+		String messagesTimestamp;
+		int deleted = 0;
+
+		List<Messages> listMessages = new ArrayList<Messages>();
+
+		if (cursor != null) {
+			if (cursor.getCount() == 0) {
+				return 2;
+			}
+
+			if (cursor.moveToFirst()) {
+				int messagesIdIndex = cursor.getColumnIndexOrThrow(Database.MESSAGES_ID);
+				int messagesFromIndex = cursor.getColumnIndexOrThrow(Database.MESSAGES_FROM);
+
+				int messagesBodyIndex = cursor.getColumnIndexOrThrow(Database.MESSAGES_BODY);
+				int messagesTimestampIndex = cursor.getColumnIndexOrThrow(Database.MESSAGES_DATE);
+				do {
+
+					int messageId = Util.toInt(cursor.getString(messagesIdIndex));
+					messagesFrom = Util.capitalizeString(cursor.getString(messagesFromIndex));
+					messagesBody = cursor.getString(messagesBodyIndex);
+					messagesTimestamp = cursor.getString(messagesTimestampIndex);
+
+					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
+					aggregateMessage.parse();
+					String xml = aggregateMessage.getXMLString();
+
+					Messages messages = new Messages();
+					listMessages.add(messages);
+
+					messages.setMessageId(messageId);
+					messages.setMessageFrom(messagesFrom);
+					messages.setMessageBody(messagesBody);
+					messages.setMessageDate(messagesTimestamp);
+
+					String date = formatDateTime(Long.parseLong(messagesTimestamp),"ddMMyykkmmss");
+
+					boolean created = createFile(
+							xml,
+							EXPORT_DIRECTORY_PATH,
+							DhisMappingHandler
+							.getDataSetId(aggregateMessage
+									.getFormId())
+									+ "_" + date + ".xml");
+					if(created) {
+						// log exported messages
+						MainApplication.mDb.addSentMessages(listMessages);
+
+						// if it successfully export message, delete message
+						// from db
+						MainApplication.mDb.deleteMessagesById(messageId);
+						deleted = 0;
+					} else {
+						deleted = 1;
+					}
+				} while (cursor.moveToNext());
+			}
+			cursor.close();
+		}
+		return deleted;
 	}
 }

@@ -167,7 +167,8 @@ public class MainHttpClient {
 		final HttpGet httpGet = new HttpGet(url);
 		Prefrences.loadPreferences(context);
 		String encoding = Prefrences.dhisLoginPref;
-		httpGet.setHeader("Authorization", "Basic " + encoding);
+		httpGet.setHeader("Authorization", "Basic " + encoding);	
+
 
 		try {
 			// Execute HTTP Get Request

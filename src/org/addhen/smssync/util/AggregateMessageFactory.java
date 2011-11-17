@@ -155,7 +155,9 @@ class PairMessage extends AggregateMessage {
 		StringWriter writer  = new StringWriter();;
 		XmlSerializer serializer = Xml.newSerializer();
 		DhisMappingHandler mapping = new IndexedMappingHandler();
-		mapping.init(formId);
+		if(!mapping.init(formId)){
+			return null;
+		}
 
 		// start building xml file
 		try {
