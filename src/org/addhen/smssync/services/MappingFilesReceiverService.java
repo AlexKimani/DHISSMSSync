@@ -10,7 +10,7 @@ public class MappingFilesReceiverService extends SmsSyncServices {
 	
 	private static String CLASS_TAG = MappingFilesReceiverService.class.getSimpleName();
 
-    public MappingFilesReceiverService() {
+    public MappingFilesReceiverService() {	
 		super(CLASS_TAG);
 	}
 
@@ -21,7 +21,10 @@ public class MappingFilesReceiverService extends SmsSyncServices {
 		
 		if(intent != null){
 			Util.showToast(MappingFilesReceiverService.this, R.string.downloading_mapping_files);
-			Util.getDhisMappingFiles(MappingFilesReceiverService.this);
+			if(!Util.getDhisMappingFiles(MappingFilesReceiverService.this)) {
+				Log.i(CLASS_TAG, "executeTask(); couldn't fetch mapping files");
+			}
+			
 		}
 	
 	}

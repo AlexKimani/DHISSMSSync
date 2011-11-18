@@ -971,6 +971,8 @@ public class Util {
 		}
 
 		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls();
+		if(list == null)
+			return false;
 
 		for (String url : list) {
 			String[] parts = url.split("/");
