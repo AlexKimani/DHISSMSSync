@@ -505,6 +505,8 @@ public class Util {
 	public static boolean postToAWebService(String xml, String from, Context context) {
 		Log.i(CLASS_TAG, "postToAWebService(): Post received SMS to configured URL:"
 				+ Prefrences.website + " xml: " + xml);
+		if(xml == null || context == null)
+			return false;
 
 		Prefrences.loadPreferences(context);
 
@@ -525,10 +527,12 @@ public class Util {
 	 */
 	public static int validateCallbackUrl(String callbackUrl) {
 
+		if(callbackUrl == null || callbackUrl.equals("") || callbackUrl.equals("http://"))
+			return 1;
 		if (TextUtils.isEmpty(callbackUrl)) {
 			return 1;
 		}
-
+		
 		pattern = Pattern.compile(URL_PATTERN);
 		matcher = pattern.matcher(callbackUrl);
 		if (matcher.matches()) {
@@ -582,7 +586,11 @@ public class Util {
 
 					// check if right format and if match post it
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					aggregateMessage.parse();
+					boolean parseResult = false;
+					if(aggregateMessage != null ) {
+						parseResult = aggregateMessage.parse();
+					}
+					if(parseResult) {
 					String xml = aggregateMessage.getXMLString();
 
 					Messages messages = new Messages();
@@ -606,6 +614,7 @@ public class Util {
 					} else {
 						deleted = 1;
 					}
+				}
 				} while (cursor.moveToNext());
 			}
 			cursor.close();

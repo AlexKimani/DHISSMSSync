@@ -178,12 +178,14 @@ public class SmsReceiverService extends Service {
 		if (Prefrences.enabled) {
 			//check if right format and post if possible, otherwise add to pending box
 			AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-			if(aggregateMessage != null) {
+			if(aggregateMessage != null && aggregateMessage.parse()) {
 				if (Util.isConnected(SmsReceiverService.this)) {
-					// get the right format
-					aggregateMessage.parse();
+					
 					String xml = aggregateMessage.getXMLString();
-
+					if(Prefrences.website.equals("") || Prefrences.website.equals("http://")) {
+						this.showNotification(messagesBody, getString(R.string.about_smssync));
+						
+					} else { 
 					boolean posted = Util.postToAWebService(xml, messagesFrom, SmsReceiverService.this);
 					// send auto response from phone not server.
 					if (Prefrences.enableReply) {
@@ -209,6 +211,7 @@ public class SmsReceiverService extends Service {
 						}
 						this.showNotification(messagesBody, getString(R.string.sending_succeeded));
 					}
+				}
 
 				} else {
 					// no internet
@@ -221,6 +224,10 @@ public class SmsReceiverService extends Service {
 						Util.delSmsFromInbox(SmsReceiverService.this, sms);
 					}
 				}
+			} else {
+				// sms is wrong format
+				Log.i(CLASS_TAG, "unrecognized sms format");
+
 			}
 		}
 	}
