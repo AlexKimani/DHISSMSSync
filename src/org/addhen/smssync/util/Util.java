@@ -971,8 +971,10 @@ public class Util {
 		}
 
 		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls();
-		if(list == null)
+		if(list == null) {
+			Util.showToast(context, R.string.download_failed);
 			return false;
+		}
 
 		for (String url : list) {
 			String[] parts = url.split("/");
