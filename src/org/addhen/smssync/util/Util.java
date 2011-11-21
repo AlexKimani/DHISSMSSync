@@ -79,16 +79,6 @@ import android.widget.Toast;
  * @author eyedol
  */
 public class Util {
-
-	/**
-	 * Dhis specific
-	 */
-
-	public static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/Android/data/" + "org.addhen.smssync" + "/dhismappingfiles/";
-	public static final String DATASET_FILE = "dataSets.xml";
-	public static final String DATASET_FILE_URL = "http://apps.dhis2.org/demo/api/dataSets.xml";
-	public static final String EXPORT_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/dhisexport/";
-
 	/**
 	 * Other
 	 */
@@ -966,8 +956,8 @@ public class Util {
 	}
 
 	public static int getDhisMappingFiles(Context context) {
-		String content = MainHttpClient.getFromWebService(DATASET_FILE_URL,context);
-		if(!createFile(content, DATASET_DIRECTORY_PATH, DATASET_FILE)) {
+		String content = MainHttpClient.getFromWebService(DhisConstants.DATASET_FILE_URL,context);
+		if(!createFile(content, DhisConstants.DATASET_DIRECTORY_PATH, DhisConstants.DATASET_FILE)) {
 			return 1;
 		}
 
@@ -980,7 +970,7 @@ public class Util {
 			String[] parts = url.split("/");
 
 			String setContent = MainHttpClient.getFromWebService(url + ".xml",context);
-			if(!createFile(setContent, DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
+			if(!createFile(setContent, DhisConstants.DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
 				return 1;
 			}
 		}
@@ -1055,7 +1045,7 @@ public class Util {
 
 					boolean created = createFile(
 							xml,
-							EXPORT_DIRECTORY_PATH,
+							DhisConstants.EXPORT_DIRECTORY_PATH,
 							datasetId + "_" + date + ".xml");
 					if(created) {
 						// log exported messages
