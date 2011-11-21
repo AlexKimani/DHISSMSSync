@@ -17,12 +17,15 @@
     <string name="edittxt_login_summary">Login information for dhis server</string>
     <string name="edittxt_login_title">Login</string>
     
-    <!-- dhis toast strings -->
+    <!-- dhis toast/notification strings -->
     <string name="login_changed">Login information has been changed</string>
     <string name="downloading_mapping_files">Downloading mapping files</string>
     <string name="nothing_to_export">No messages to export</string>
     <string name="export_failed">Exporting failed</string>
-    
+    <string name="mapping_download_failed">Failed to download mapping files</string>
+    <string name="mapping_download_success">Successfully downloaded mapping files</string>
+    <string name="sync_unexpected_error">Unexpected error while preparing SMS for sync</string>
+            
     <!-- dhis menu strings -->
     <string name="menu_dhis_export">Export</string>
     <string name="menu_dhis_export_all">Export All</string>

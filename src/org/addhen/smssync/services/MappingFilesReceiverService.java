@@ -1,6 +1,6 @@
 package org.addhen.smssync.services;
 
-import org.addhen.smssync.R;
+import org.addhen.smssync.util.ServicesConstants;
 import org.addhen.smssync.util.Util;
 
 import android.content.Intent;
@@ -9,9 +9,12 @@ import android.util.Log;
 public class MappingFilesReceiverService extends SmsSyncServices {
 	
 	private static String CLASS_TAG = MappingFilesReceiverService.class.getSimpleName();
+	
+	private Intent mappingStatusIntent; // holds the status of the sync and sends it to
 
     public MappingFilesReceiverService() {
 		super(CLASS_TAG);
+		mappingStatusIntent = new Intent(ServicesConstants.MAPPING_DOWNLOAD_ACTION);
 	}
 
 
@@ -20,8 +23,9 @@ public class MappingFilesReceiverService extends SmsSyncServices {
 		Log.i(CLASS_TAG, "executeTask(); get mapping files");
 		
 		if(intent != null){
-			Util.showToast(MappingFilesReceiverService.this, R.string.downloading_mapping_files);
-			Util.getDhisMappingFiles(MappingFilesReceiverService.this);
+			int status = Util.getDhisMappingFiles(MappingFilesReceiverService.this);
+			mappingStatusIntent.putExtra("mappingstatus", status);
+            sendBroadcast(mappingStatusIntent);
 		}
 	
 	}

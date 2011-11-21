@@ -66,6 +66,7 @@ public class MessagesTabActivity extends ActivityGroup {
     protected void onResume() {
         super.onResume();
         registerReceiver(broadcastReceiver, new IntentFilter(ServicesConstants.AUTO_SYNC_ACTION));
+        registerReceiver(mappingBroadcastReceiver, new IntentFilter(ServicesConstants.MAPPING_DOWNLOAD_ACTION));
     }
 
     @Override
@@ -77,11 +78,12 @@ public class MessagesTabActivity extends ActivityGroup {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(broadcastReceiver);
+        unregisterReceiver(mappingBroadcastReceiver);
     }
 
-    private void updateWindowTitle(int status) {
+    private void updateWindowTitle(boolean show) {
         //means pending messages are being sync
-        if (status == 3) {
+        if (show) {
             setProgressBarIndeterminateVisibility(true);
         } else {
             setProgressBarIndeterminateVisibility(false);
@@ -112,7 +114,29 @@ public class MessagesTabActivity extends ActivityGroup {
             if (intent != null) {
                 int status = intent.getIntExtra("status", 2);
 
-                updateWindowTitle(status);
+                if(status == 3) {
+                	updateWindowTitle(true);
+                } else {
+                	updateWindowTitle(false);
+                }
+            }
+        }
+    };
+    
+    /**
+     * This will cause the progress icon to show on the title bar
+     */
+    private BroadcastReceiver mappingBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null) {
+                int status = intent.getIntExtra("mappingstatus", 1);
+
+                if(status == 2) {
+                	updateWindowTitle(true);
+                } else {
+                	updateWindowTitle(false);
+                }
             }
         }
     };
