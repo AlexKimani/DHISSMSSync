@@ -12,7 +12,7 @@ public class MappingFilesReceiverService extends SmsSyncServices {
 	
 	private Intent mappingStatusIntent; // holds the status of the sync and sends it to
 
-    public MappingFilesReceiverService() {
+    public MappingFilesReceiverService() {	
 		super(CLASS_TAG);
 		mappingStatusIntent = new Intent(ServicesConstants.MAPPING_DOWNLOAD_ACTION);
 	}

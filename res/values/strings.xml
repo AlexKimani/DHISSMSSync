@@ -20,6 +20,8 @@
     <!-- dhis toast/notification strings -->
     <string name="login_changed">Login information has been changed</string>
     <string name="downloading_mapping_files">Downloading mapping files</string>
+    <string name="download_failed">Download failed! Have you entered dhis login information in settings?</string>
+   	<string name="download_successful">Download successful!</string>
     <string name="nothing_to_export">No messages to export</string>
     <string name="export_failed">Exporting failed</string>
     <string name="mapping_download_failed">Failed to download mapping files</string>

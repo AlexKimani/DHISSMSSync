@@ -147,7 +147,7 @@ public class SmsReceiverService extends Service {
 	/**
 	 * Handle receiving a SMS message
 	 */
-	 private void handleSmsReceived(Intent intent) {
+	private void handleSmsReceived(Intent intent) {
 
 		Bundle bundle = intent.getExtras();
 		Prefrences.loadPreferences(SmsReceiverService.this);
@@ -211,10 +211,12 @@ public class SmsReceiverService extends Service {
 							}
 						} else {
 							this.showNotification(messagesBody, getString(R.string.sync_unexpected_error));
+
 						}
 					} else {
 						this.showNotification(messagesBody, getString(R.string.sync_unexpected_error));
 					}
+
 				} else {
 					// no internet
 					this.showNotification(messagesBody, getString(R.string.sending_failed));
@@ -226,188 +228,188 @@ public class SmsReceiverService extends Service {
 						Util.delSmsFromInbox(SmsReceiverService.this, sms);
 					}
 				}
-			}
+			} 
 		}
-	 }
+	}
 
-	 /**
-	  * Show a notification
-	  * 
-	  * @param String message to display
-	  * @param String notification title
-	  */
-	 private void showNotification(String message, String notification_title) {
+	/**
+	 * Show a notification
+	 * 
+	 * @param String message to display
+	 * @param String notification title
+	 */
+	private void showNotification(String message, String notification_title) {
 
-		 Intent baseIntent = new Intent(this, MessagesTabActivity.class);
-		 baseIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		Intent baseIntent = new Intent(this, MessagesTabActivity.class);
+		baseIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-		 Notification notification = new Notification(R.drawable.icon, getString(R.string.status),
-				 System.currentTimeMillis());
-		 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, baseIntent, 0);
-		 notification.setLatestEventInfo(this, notification_title, message, pendingIntent);
-		 notificationManager.notify(1, notification);
+		Notification notification = new Notification(R.drawable.icon, getString(R.string.status),
+				System.currentTimeMillis());
+		PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, baseIntent, 0);
+		notification.setLatestEventInfo(this, notification_title, message, pendingIntent);
+		notificationManager.notify(1, notification);
 
-	 }
+	}
 
-	 /**
-	  * Put failed messages to be sent to the callback URL to the local database.
-	  * 
-	  * @return void
-	  */
-	 private void postToPendingBox() {
-		 Log.i(CLASS_TAG, "postToOutbox(): post failed messages to outbox");
-		 // Get message id.
-		 Long msgId = new Long(Util.getId(SmsReceiverService.this, sms, "id"));
+	/**
+	 * Put failed messages to be sent to the callback URL to the local database.
+	 * 
+	 * @return void
+	 */
+	private void postToPendingBox() {
+		Log.i(CLASS_TAG, "postToOutbox(): post failed messages to outbox");
+		// Get message id.
+		Long msgId = new Long(Util.getId(SmsReceiverService.this, sms, "id"));
 
-		 String messageId = msgId.toString();
+		String messageId = msgId.toString();
 
-		 String messageDate = String.valueOf(sms.getTimestampMillis());
-		 Util.smsMap.put("messagesFrom", messagesFrom);
-		 Util.smsMap.put("messagesBody", messagesBody);
-		 Util.smsMap.put("messagesDate", messageDate);
-		 Util.smsMap.put("messagesId", messageId);
+		String messageDate = String.valueOf(sms.getTimestampMillis());
+		Util.smsMap.put("messagesFrom", messagesFrom);
+		Util.smsMap.put("messagesBody", messagesBody);
+		Util.smsMap.put("messagesDate", messageDate);
+		Util.smsMap.put("messagesId", messageId);
 
-		 Util.processMessages(SmsReceiverService.this);
+		Util.processMessages(SmsReceiverService.this);
 
-	 }
+	}
 
-	 /**
-	  * Put successfully sent messages to a local database for logging sake
-	  * 
-	  * @return void
-	  */
-	 private void postToSentBox() {
-		 Log.i(CLASS_TAG, "postToOutbox(): post failed messages to outbox");
-		 // Get message id.
-		 Long msgId = new Long(Util.getId(SmsReceiverService.this, sms, "id"));
+	/**
+	 * Put successfully sent messages to a local database for logging sake
+	 * 
+	 * @return void
+	 */
+	private void postToSentBox() {
+		Log.i(CLASS_TAG, "postToOutbox(): post failed messages to outbox");
+		// Get message id.
+		Long msgId = new Long(Util.getId(SmsReceiverService.this, sms, "id"));
 
-		 String messageId = msgId.toString();
+		String messageId = msgId.toString();
 
-		 String messageDate = String.valueOf(sms.getTimestampMillis());
-		 SentMessagesUtil.smsMap.put("messagesFrom", messagesFrom);
-		 SentMessagesUtil.smsMap.put("messagesBody", messagesBody);
-		 SentMessagesUtil.smsMap.put("messagesDate", messageDate);
-		 SentMessagesUtil.smsMap.put("messagesId", messageId);
+		String messageDate = String.valueOf(sms.getTimestampMillis());
+		SentMessagesUtil.smsMap.put("messagesFrom", messagesFrom);
+		SentMessagesUtil.smsMap.put("messagesBody", messagesBody);
+		SentMessagesUtil.smsMap.put("messagesDate", messageDate);
+		SentMessagesUtil.smsMap.put("messagesId", messageId);
 
-		 int status = SentMessagesUtil.processSentMessages(SmsReceiverService.this);
-		 statusIntent.putExtra("status", status);
-		 sendBroadcast(statusIntent);
+		int status = SentMessagesUtil.processSentMessages(SmsReceiverService.this);
+		statusIntent.putExtra("status", status);
+		sendBroadcast(statusIntent);
 
-	 }
+	}
 
-	 /**
-	  * Get the SMS message.
-	  * 
-	  * @param Intent intent - The SMS message intent.
-	  * @return SmsMessage
-	  */
-	 public static final SmsMessage[] getMessagesFromIntent(Intent intent) {
-		 Log.i(CLASS_TAG, "getMessagesFromIntent(): getting SMS message");
-		 Object[] messages = (Object[])intent.getSerializableExtra("pdus");
+	/**
+	 * Get the SMS message.
+	 * 
+	 * @param Intent intent - The SMS message intent.
+	 * @return SmsMessage
+	 */
+	public static final SmsMessage[] getMessagesFromIntent(Intent intent) {
+		Log.i(CLASS_TAG, "getMessagesFromIntent(): getting SMS message");
+		Object[] messages = (Object[])intent.getSerializableExtra("pdus");
 
-		 if (messages == null) {
-			 return null;
-		 }
+		if (messages == null) {
+			return null;
+		}
 
-		 if (messages.length == 0) {
-			 return null;
-		 }
+		if (messages.length == 0) {
+			return null;
+		}
 
-		 byte[][] pduObjs = new byte[messages.length][];
+		byte[][] pduObjs = new byte[messages.length][];
 
-		 for (int i = 0; i < messages.length; i++) {
-			 pduObjs[i] = (byte[])messages[i];
-		 }
+		for (int i = 0; i < messages.length; i++) {
+			pduObjs[i] = (byte[])messages[i];
+		}
 
-		 byte[][] pdus = new byte[pduObjs.length][];
-		 int pduCount = pdus.length;
+		byte[][] pdus = new byte[pduObjs.length][];
+		int pduCount = pdus.length;
 
-		 SmsMessage[] msgs = new SmsMessage[pduCount];
-		 for (int i = 0; i < pduCount; i++) {
-			 pdus[i] = pduObjs[i];
-			 msgs[i] = SmsMessage.createFromPdu(pdus[i]);
-		 }
-		 return msgs;
-	 }
+		SmsMessage[] msgs = new SmsMessage[pduCount];
+		for (int i = 0; i < pduCount; i++) {
+			pdus[i] = pduObjs[i];
+			msgs[i] = SmsMessage.createFromPdu(pdus[i]);
+		}
+		return msgs;
+	}
 
-	 /**
-	  * Start the service to process the current event notifications, acquiring
-	  * the wake lock before returning to ensure that the service will run.
-	  * 
-	  * @param Context context - The context of the calling activity.
-	  * @param Intent intent - The calling intent.
-	  * @return void
-	  */
-	 public static void beginStartingService(Context context, Intent intent) {
-		 synchronized (mStartingServiceSync) {
+	/**
+	 * Start the service to process the current event notifications, acquiring
+	 * the wake lock before returning to ensure that the service will run.
+	 * 
+	 * @param Context context - The context of the calling activity.
+	 * @param Intent intent - The calling intent.
+	 * @return void
+	 */
+	public static void beginStartingService(Context context, Intent intent) {
+		synchronized (mStartingServiceSync) {
 
-			 if (mStartingService == null) {
-				 PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
-				 mStartingService = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, CLASS_TAG);
-				 mStartingService.setReferenceCounted(false);
-			 }
+			if (mStartingService == null) {
+				PowerManager pm = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+				mStartingService = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, CLASS_TAG);
+				mStartingService.setReferenceCounted(false);
+			}
 
-			 // keep wifi alive
-			 if (wifilock == null) {
-				 WifiManager manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-				 wifilock = manager.createWifiLock(CLASS_TAG);
-			 }
+			// keep wifi alive
+			if (wifilock == null) {
+				WifiManager manager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+				wifilock = manager.createWifiLock(CLASS_TAG);
+			}
 
-			 mStartingService.acquire();
-			 wifilock.acquire();
-			 context.startService(intent);
-		 }
-	 }
+			mStartingService.acquire();
+			wifilock.acquire();
+			context.startService(intent);
+		}
+	}
 
-	 /**
-	  * Called back by the service when it has finished processing notifications,
-	  * releasing the wake lock and wifi lock if the service is now stopping.
-	  * 
-	  * @param Service service - The calling service.
-	  * @param int startId - The service start id.
-	  * @return void
-	  */
-	 public static void finishStartingService(Service service, int startId) {
+	/**
+	 * Called back by the service when it has finished processing notifications,
+	 * releasing the wake lock and wifi lock if the service is now stopping.
+	 * 
+	 * @param Service service - The calling service.
+	 * @param int startId - The service start id.
+	 * @return void
+	 */
+	public static void finishStartingService(Service service, int startId) {
 
-		 synchronized (mStartingServiceSync) {
+		synchronized (mStartingServiceSync) {
 
-			 if (mStartingService != null) {
-				 if (service.stopSelfResult(startId)) {
-					 mStartingService.release();
-				 }
-			 }
+			if (mStartingService != null) {
+				if (service.stopSelfResult(startId)) {
+					mStartingService.release();
+				}
+			}
 
-		 }
-	 }
+		}
+	}
 
-	 // Display pending messages.
-	 final Runnable mDisplayMessages = new Runnable() {
+	// Display pending messages.
+	final Runnable mDisplayMessages = new Runnable() {
 
-		 public void run() {
-			 PendingMessagesActivity.showMessages();
-		 }
+		public void run() {
+			PendingMessagesActivity.showMessages();
+		}
 
-	 };
+	};
 
-	 // Display pending messages.
-	 final Runnable mDisplaySentMessages = new Runnable() {
+	// Display pending messages.
+	final Runnable mDisplaySentMessages = new Runnable() {
 
-		 public void run() {
-			 SentMessagesActivity.showMessages();
-		 }
+		public void run() {
+			SentMessagesActivity.showMessages();
+		}
 
-	 };
+	};
 
-	 /**
-	  * Makes an attempt to connect to a data network.
-	  */
-	 public void connectToDataNetwork() {
-		 // Enable the Connectivity Changed Receiver to listen for
-		 // connection to a network so we can send pending messages.
-		 PackageManager pm = getPackageManager();
-		 ComponentName connectivityReceiver = new ComponentName(this,
-				 ConnectivityChangedReceiver.class);
-		 pm.setComponentEnabledSetting(connectivityReceiver,
-				 PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-	 }
+	/**
+	 * Makes an attempt to connect to a data network.
+	 */
+	public void connectToDataNetwork() {
+		// Enable the Connectivity Changed Receiver to listen for
+		// connection to a network so we can send pending messages.
+		PackageManager pm = getPackageManager();
+		ComponentName connectivityReceiver = new ComponentName(this,
+				ConnectivityChangedReceiver.class);
+		pm.setComponentEnabledSetting(connectivityReceiver,
+				PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+	}
 }

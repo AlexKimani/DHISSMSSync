@@ -59,6 +59,7 @@ public abstract class DhisMappingHandler {
 
 	public static ArrayList<String> getDatasetsUrls() {
 		Document doc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
+
 		if(doc == null) {
 			return null;
 		}
@@ -81,10 +82,11 @@ public abstract class DhisMappingHandler {
 
 	public static String getDataSetId(String formId) {
 		Document doc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
+
 		if(doc == null) {
 			return null;
 		}
-		
+
 		NodeList dataSetList = doc.getElementsByTagName("dataSet");
 		
 		int setNumber = Integer.parseInt(formId)-1;

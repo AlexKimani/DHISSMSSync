@@ -524,7 +524,6 @@ public class Util {
 	 *         URL - 3 = can't make connection to it.
 	 */
 	public static int validateCallbackUrl(String callbackUrl) {
-
 		if (TextUtils.isEmpty(callbackUrl)) {
 			return 1;
 		}
@@ -582,17 +581,17 @@ public class Util {
 
 					// check if right format and if match post it
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					
+
 					if(aggregateMessage == null) {
 						return 1;
 					}
-					
+
 					if(!aggregateMessage.parse()) {
 						return 1;
 					}
-					
+
 					String xml = aggregateMessage.getXMLString();
-					
+
 					if(xml == null) {
 						return 1;
 					}
@@ -623,7 +622,6 @@ public class Util {
 			cursor.close();
 		}
 		return deleted;
-
 	}
 
 	/**
@@ -1025,17 +1023,17 @@ public class Util {
 					messagesTimestamp = cursor.getString(messagesTimestampIndex);
 
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					
+
 					if(aggregateMessage == null) {
 						return 1;
 					}
-					
+
 					if(!aggregateMessage.parse()) {
 						return 1;
 					}
-					
+
 					String xml = aggregateMessage.getXMLString();
-					
+
 					if(xml == null) {
 						return 1;
 					}
@@ -1050,7 +1048,7 @@ public class Util {
 
 					String date = formatDateTime(Long.parseLong(messagesTimestamp),"ddMMyykkmmss");
 					String datasetId = DhisMappingHandler.getDataSetId(aggregateMessage.getFormId());
-					
+
 					if(datasetId == null) {
 						return 1;
 					}
