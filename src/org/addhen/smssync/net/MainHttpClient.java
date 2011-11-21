@@ -168,6 +168,8 @@ public class MainHttpClient {
 		Prefrences.loadPreferences(context);
 		String encoding = Prefrences.dhisLoginPref;
 		httpGet.setHeader("Authorization", "Basic " + encoding);	
+		
+		Log.i(CLASS_TAG, "getFromWebService():" + " encoding: " + encoding);
 
 
 		try {

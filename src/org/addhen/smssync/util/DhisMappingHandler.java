@@ -33,7 +33,8 @@ public abstract class DhisMappingHandler {
 	}
 
 	public boolean init(String formId) {
-		if((datasetDoc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE)) == null) {
+		datasetDoc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
+		if(datasetDoc == null) {
 			return false;
 		}
 
@@ -48,7 +49,8 @@ public abstract class DhisMappingHandler {
 		Element elem = (Element) node;
 		dataSetId  =  elem.getAttribute("id");
 
-		if((elementsDoc = initDoc(Util.DATASET_DIRECTORY_PATH + dataSetId + ".xml")) == null) {
+		elementsDoc = initDoc(Util.DATASET_DIRECTORY_PATH + dataSetId + ".xml");
+		if(elementsDoc == null) {
 			return false;
 		}
 		return true;
@@ -57,7 +59,15 @@ public abstract class DhisMappingHandler {
 
 	public static ArrayList<String> getDatasetsUrls() {
 		Document doc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
+		if(doc == null) {
+			return null;
+		}
+			
 		NodeList dataSetList = doc.getElementsByTagName("dataSet");
+		if(dataSetList.getLength() == 0) {
+			return null;
+		}
+		
 		ArrayList<String> list = new ArrayList<String>();
 
 		for (int i = 0; i < dataSetList.getLength(); i++) {
@@ -71,9 +81,16 @@ public abstract class DhisMappingHandler {
 
 	public static String getDataSetId(String formId) {
 		Document doc = initDoc(Util.DATASET_DIRECTORY_PATH + Util.DATASET_FILE);
+		if(doc == null) {
+			return null;
+		}
+		
 		NodeList dataSetList = doc.getElementsByTagName("dataSet");
 		
 		int setNumber = Integer.parseInt(formId)-1;
+		if(setNumber < 1 || setNumber > dataSetList.getLength()) {
+			return null;
+		} 
 
 		Node setNode = dataSetList.item(setNumber);
 		Element setElem = (Element) setNode;

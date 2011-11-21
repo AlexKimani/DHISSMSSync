@@ -582,8 +582,20 @@ public class Util {
 
 					// check if right format and if match post it
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					aggregateMessage.parse();
+					
+					if(aggregateMessage == null) {
+						return 1;
+					}
+					
+					if(!aggregateMessage.parse()) {
+						return 1;
+					}
+					
 					String xml = aggregateMessage.getXMLString();
+					
+					if(xml == null) {
+						return 1;
+					}
 
 					Messages messages = new Messages();
 					listMessages.add(messages);
@@ -955,23 +967,26 @@ public class Util {
 		}
 	}
 
-	public static boolean getDhisMappingFiles(Context context) {
+	public static int getDhisMappingFiles(Context context) {
 		String content = MainHttpClient.getFromWebService(DATASET_FILE_URL,context);
 		if(!createFile(content, DATASET_DIRECTORY_PATH, DATASET_FILE)) {
-			return false;
+			return 1;
 		}
 
 		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls();
+		if(list == null) {
+			return 1;
+		}
 
 		for (String url : list) {
 			String[] parts = url.split("/");
 
 			String setContent = MainHttpClient.getFromWebService(url + ".xml",context);
 			if(!createFile(setContent, DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
-				return false;
+				return 1;
 			}
 		}
-		return true;
+		return 0;
 	}
 
 	public static int exportToXMLFile(Context context, int messagesId) {
@@ -1010,8 +1025,20 @@ public class Util {
 					messagesTimestamp = cursor.getString(messagesTimestampIndex);
 
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					aggregateMessage.parse();
+					
+					if(aggregateMessage == null) {
+						return 1;
+					}
+					
+					if(!aggregateMessage.parse()) {
+						return 1;
+					}
+					
 					String xml = aggregateMessage.getXMLString();
+					
+					if(xml == null) {
+						return 1;
+					}
 
 					Messages messages = new Messages();
 					listMessages.add(messages);
@@ -1022,14 +1049,16 @@ public class Util {
 					messages.setMessageDate(messagesTimestamp);
 
 					String date = formatDateTime(Long.parseLong(messagesTimestamp),"ddMMyykkmmss");
+					String datasetId = DhisMappingHandler.getDataSetId(aggregateMessage.getFormId());
+					
+					if(datasetId == null) {
+						return 1;
+					}
 
 					boolean created = createFile(
 							xml,
 							EXPORT_DIRECTORY_PATH,
-							DhisMappingHandler
-							.getDataSetId(aggregateMessage
-									.getFormId())
-									+ "_" + date + ".xml");
+							datasetId + "_" + date + ".xml");
 					if(created) {
 						// log exported messages
 						MainApplication.mDb.addSentMessages(listMessages);
