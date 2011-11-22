@@ -493,13 +493,16 @@ public class Util {
 	 * @return boolean
 	 */
 	public static boolean postToAWebService(String xml, String from, Context context) {
-		Log.i(CLASS_TAG, "postToAWebService(): Post received SMS to configured URL:"
-				+ Prefrences.website + " xml: " + xml);
-
 		Prefrences.loadPreferences(context);
 
 		if (!Prefrences.website.equals("")) {
-			StringBuilder urlBuilder = new StringBuilder(Prefrences.website + "?phone=" + from);
+			StringBuilder urlBuilder = new StringBuilder(Prefrences.website);
+			urlBuilder.append(DhisConstants.POST_PATH);
+			urlBuilder.append(DhisConstants.PHONE_EXTENSION + from);
+
+			Log.i(CLASS_TAG, "postToAWebService(): Post received SMS to configured URL:"
+					+ urlBuilder.toString() + " xml: " + xml);
+
 			return MainHttpClient.postSmsToWebService(urlBuilder.toString(), xml, context);
 		}
 
@@ -956,8 +959,15 @@ public class Util {
 	}
 
 	public static int getDhisMappingFiles(Context context) {
-		String content = MainHttpClient.getFromWebService(DhisConstants.DATASET_FILE_URL,context);
-		if(!createFile(content, DhisConstants.DATASET_DIRECTORY_PATH, DhisConstants.DATASET_FILE)) {
+		Prefrences.loadPreferences(context);
+		String instanceURL = Prefrences.website;
+
+		if (instanceURL.equals("")){
+			return 1;
+		}
+
+		String content = MainHttpClient.getFromWebService(instanceURL + DhisConstants.DATASET_PATH,context);
+		if(!createFile(content, DhisConstants.DATASET_DIRECTORY, DhisConstants.DATASET_FILE)) {
 			return 1;
 		}
 
@@ -970,7 +980,7 @@ public class Util {
 			String[] parts = url.split("/");
 
 			String setContent = MainHttpClient.getFromWebService(url + ".xml",context);
-			if(!createFile(setContent, DhisConstants.DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
+			if(!createFile(setContent, DhisConstants.DATASET_DIRECTORY, parts[parts.length-1] + ".xml" )) {
 				return 1;
 			}
 		}
@@ -1045,7 +1055,7 @@ public class Util {
 
 					boolean created = createFile(
 							xml,
-							DhisConstants.EXPORT_DIRECTORY_PATH,
+							DhisConstants.EXPORT_DIRECTORY,
 							datasetId + "_" + date + ".xml");
 					if(created) {
 						// log exported messages

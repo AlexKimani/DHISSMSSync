@@ -33,7 +33,7 @@ public abstract class DhisMappingHandler {
 	}
 
 	public boolean init(String formId) {
-		datasetDoc = initDoc(DhisConstants.DATASET_DIRECTORY_PATH + DhisConstants.DATASET_FILE);
+		datasetDoc = initDoc(DhisConstants.DATASET_DIRECTORY + DhisConstants.DATASET_FILE);
 		if(datasetDoc == null) {
 			return false;
 		}
@@ -49,7 +49,7 @@ public abstract class DhisMappingHandler {
 		Element elem = (Element) node;
 		dataSetId  =  elem.getAttribute("id");
 
-		elementsDoc = initDoc(DhisConstants.DATASET_DIRECTORY_PATH + dataSetId + ".xml");
+		elementsDoc = initDoc(DhisConstants.DATASET_DIRECTORY + dataSetId + ".xml");
 		if(elementsDoc == null) {
 			return false;
 		}
@@ -58,7 +58,7 @@ public abstract class DhisMappingHandler {
 	}
 
 	public static ArrayList<String> getDatasetsUrls() {
-		Document doc = initDoc(DhisConstants.DATASET_DIRECTORY_PATH + DhisConstants.DATASET_FILE);
+		Document doc = initDoc(DhisConstants.DATASET_DIRECTORY + DhisConstants.DATASET_FILE);
 
 		if(doc == null) {
 			return null;
@@ -81,7 +81,7 @@ public abstract class DhisMappingHandler {
 	}
 
 	public static String getDataSetId(String formId) {
-		Document doc = initDoc(DhisConstants.DATASET_DIRECTORY_PATH + DhisConstants.DATASET_FILE);
+		Document doc = initDoc(DhisConstants.DATASET_DIRECTORY + DhisConstants.DATASET_FILE);
 
 		if(doc == null) {
 			return null;
