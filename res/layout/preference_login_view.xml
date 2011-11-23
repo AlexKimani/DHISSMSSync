@@ -10,10 +10,11 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="100sp"
             android:layout_height="wrap_content"
             android:text="Username"
-            android:paddingRight="10sp" />
+            android:paddingRight="10sp"
+            android:paddingLeft="5sp" />
 
         <EditText
             android:id="@+id/login_username"
@@ -28,10 +29,11 @@
         android:orientation="horizontal" >
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="100sp"
             android:layout_height="wrap_content"
             android:text="Password"
-            android:paddingRight="10sp" />
+            android:paddingRight="10sp"
+            android:paddingLeft="5sp" />
 
         <EditText
             android:id="@+id/login_password"
