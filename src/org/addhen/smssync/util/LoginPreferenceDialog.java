@@ -23,6 +23,7 @@ public class LoginPreferenceDialog extends DialogPreference {
 
 	public LoginPreferenceDialog(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		this.context = context;
 	}
 
 	/**
