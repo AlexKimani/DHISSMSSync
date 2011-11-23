@@ -92,7 +92,7 @@ public class PendingMessagesActivity extends Activity {
 	private static final int DELETE = Menu.FIRST + 7;
 
 	private static final int SMSSYNC_SYNC = Menu.FIRST + 8;
-	
+
 	private static final int DHIS_EXPORT = Menu.FIRST + 9;
 
 	private final Handler mHandler = new Handler();
@@ -101,9 +101,11 @@ public class PendingMessagesActivity extends Activity {
 
 	private Intent syncPendingMessagesServiceIntent;
 
-	private Intent getDhisMappingFilesService;
+	private Intent getDhisMappingFilesServiceIntent;
 
 	private Intent statusIntent;
+	
+	private Intent mappingStatusIntent;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -112,6 +114,7 @@ public class PendingMessagesActivity extends Activity {
 		setContentView(R.layout.list_messages);
 		Prefrences.loadPreferences(PendingMessagesActivity.this);
 		statusIntent = new Intent(ServicesConstants.AUTO_SYNC_ACTION);
+		mappingStatusIntent = new Intent(ServicesConstants.MAPPING_DOWNLOAD_ACTION);
 		// show notification
 		if (Prefrences.enabled) {
 			Util.showNotification(PendingMessagesActivity.this);
@@ -142,18 +145,17 @@ public class PendingMessagesActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		registerReceiver(broadcastReceiver, new IntentFilter(
-				ServicesConstants.AUTO_SYNC_ACTION));
-		registerReceiver(smsSentReceiver, new IntentFilter(
-				ServicesConstants.SENT));
-		registerReceiver(smsDeliveredReceiver, new IntentFilter(
-				ServicesConstants.DELIVERED));
+		registerReceiver(mappingBroadcastReceiver, new IntentFilter(ServicesConstants.MAPPING_DOWNLOAD_ACTION));
+		registerReceiver(broadcastReceiver, new IntentFilter(ServicesConstants.AUTO_SYNC_ACTION));
+		registerReceiver(smsSentReceiver, new IntentFilter(ServicesConstants.SENT));
+		registerReceiver(smsDeliveredReceiver, new IntentFilter(ServicesConstants.DELIVERED));
 		mHandler.post(mDisplayMessages);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		unregisterReceiver(mappingBroadcastReceiver);
 		unregisterReceiver(broadcastReceiver);
 		unregisterReceiver(smsSentReceiver);
 		unregisterReceiver(smsDeliveredReceiver);
@@ -378,13 +380,13 @@ public class PendingMessagesActivity extends Activity {
 		case SMSSYNC_SYNC_ALL:
 			syncMessages(0);
 			return (true);
-		
+
 		case DHIS_EXPORT:
 			ExportMessagesTask exportMessagesTask1 = new ExportMessagesTask();
 			exportMessagesTask1.appContext = this;
 			exportMessagesTask1.execute(messageId);
 			return (true);
-			
+
 		case DHIS_EXPORT_ALL:
 			ExportMessagesTask exportMessagesTask2 = new ExportMessagesTask();
 			exportMessagesTask2.appContext = this;
@@ -454,7 +456,6 @@ public class PendingMessagesActivity extends Activity {
 			return (true);
 
 		case DHIS_GET_MAPPING_FILES:
-			Util.showToast(PendingMessagesActivity.this, R.string.dhis_get_mapping_files);
 			dhisGetMappingFiles();
 			return (true);
 
@@ -484,62 +485,6 @@ public class PendingMessagesActivity extends Activity {
 
 		return (false);
 	}
-
-	/**
-	 * Dhis menu logic
-	 */
-
-	private void dhisGetMappingFiles(){
-		getDhisMappingFilesService = new Intent(this,MappingFilesReceiverService.class);
-		startService(getDhisMappingFilesService);
-	}
-
-	// Thread class to handle synchronous execution of message export task.
-	private class ExportMessagesTask extends AsyncTask<Integer, Void, Integer> {
-
-		protected Integer status;
-
-		private ProgressDialog dialog;
-
-		protected Context appContext;
-
-		@Override
-		protected void onPreExecute() {
-
-			this.dialog = ProgressDialog.show(appContext,
-					getString(R.string.please_wait),
-					getString(R.string.export_messages), false);
-		}
-
-		@Override
-		protected Integer doInBackground(Integer... ids) {
-
-			status = Util.exportToXMLFile(appContext, ids[0]);
-			return status;
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-
-			if (result == 0) {
-				this.dialog.cancel();
-				showMessages();
-			} else if (result == 1) {
-				this.dialog.cancel();
-				showMessages();
-				Util.showToast(PendingMessagesActivity.this,
-						R.string.export_failed);
-			} else if (result == 2) {
-				this.dialog.cancel();
-				Util.showToast(PendingMessagesActivity.this,
-						R.string.nothing_to_export);
-			}
-		}
-	}
-
-	/**
-	 * Other menu logic
-	 */
 
 	/**
 	 * Delete all messages
@@ -666,11 +611,16 @@ public class PendingMessagesActivity extends Activity {
 	public void syncMessages(int messagesId) {
 		statusIntent.putExtra("status", 3);
 		sendBroadcast(statusIntent);
-		syncPendingMessagesServiceIntent = new Intent(this,
-				SyncPendingMessagesService.class);
-		syncPendingMessagesServiceIntent.putExtra(
-				ServicesConstants.MESSEAGE_ID, messagesId);
+		syncPendingMessagesServiceIntent = new Intent(this,SyncPendingMessagesService.class);
+		syncPendingMessagesServiceIntent.putExtra(ServicesConstants.MESSEAGE_ID, messagesId);
 		startService(syncPendingMessagesServiceIntent);
+	}
+
+	private void dhisGetMappingFiles(){
+		mappingStatusIntent.putExtra("mappingstatus", 2);
+		sendBroadcast(mappingStatusIntent);
+		getDhisMappingFilesServiceIntent = new Intent(this,MappingFilesReceiverService.class);
+		startService(getDhisMappingFilesServiceIntent);
 	}
 
 	/**
@@ -737,6 +687,49 @@ public class PendingMessagesActivity extends Activity {
 		}
 	}
 
+	// Thread class to handle synchronous execution of message export task.
+	private class ExportMessagesTask extends AsyncTask<Integer, Void, Integer> {
+
+		protected Integer status;
+
+		private ProgressDialog dialog;
+
+		protected Context appContext;
+
+		@Override
+		protected void onPreExecute() {
+
+			this.dialog = ProgressDialog.show(appContext,
+					getString(R.string.please_wait),
+					getString(R.string.export_messages), false);
+		}
+
+		@Override
+		protected Integer doInBackground(Integer... ids) {
+
+			status = Util.exportToXMLFile(appContext, ids[0]);
+			return status;
+		}
+
+		@Override
+		protected void onPostExecute(Integer result) {
+
+			if (result == 0) {
+				this.dialog.cancel();
+				showMessages();
+			} else if (result == 1) {
+				this.dialog.cancel();
+				showMessages();
+				Util.showToast(PendingMessagesActivity.this,
+						R.string.export_failed);
+			} else if (result == 2) {
+				this.dialog.cancel();
+				Util.showToast(PendingMessagesActivity.this,
+						R.string.nothing_to_export);
+			} 
+		}
+	}
+
 	/**
 	 * This will refresh content of the listview aka the pending messages when
 	 * smssync successfully syncs pending messages.
@@ -762,6 +755,31 @@ public class PendingMessagesActivity extends Activity {
 				} else if (status == 2) {
 					Util.showToast(PendingMessagesActivity.this,
 							R.string.no_messages_to_sync);
+				}
+
+				mHandler.post(mUpdateListView);
+			}
+		}
+	};
+
+	/**
+	 * This will refresh content of the listview aka the pending messages when
+	 * smssync successfully syncs pending messages.
+	 */
+	private BroadcastReceiver mappingBroadcastReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			if (intent != null) {
+				int status = intent.getIntExtra("mappingstatus", 1);
+
+				if (status == 0) {
+					Util.showToast(PendingMessagesActivity.this,R.string.mapping_download_success);
+				} else if (status == 1) {
+					Util.showToast(PendingMessagesActivity.this,R.string.mapping_download_failed);
+				} 
+				
+				if (getDhisMappingFilesServiceIntent != null) {
+					stopService(getDhisMappingFilesServiceIntent);
 				}
 
 				mHandler.post(mUpdateListView);

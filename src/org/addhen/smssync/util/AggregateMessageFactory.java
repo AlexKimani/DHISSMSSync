@@ -190,10 +190,6 @@ class PairMessage extends AggregateMessage {
 }
 
 public class AggregateMessageFactory {
-
-	private static final String PIPED_REGEX = "\\w+#\\w+#((\\w+\\|)*(\\w+))";
-	private static final String PAIR_REGEX = "\\w+\\s+(((\\w+\\.\\w+=\\w+|\\w+=\\w+),\\s*)*((\\w+\\.\\w+=\\w+|\\w+=\\w+)){1})";
-
 	/**
 	 * Returns AggregateMessage according to the body
 	 * 
@@ -204,8 +200,8 @@ public class AggregateMessageFactory {
 			final String date) {
 		if (body == null)
 			return null;
-		Pattern p1 = Pattern.compile(PIPED_REGEX);
-		Pattern p2 = Pattern.compile(PAIR_REGEX);
+		Pattern p1 = Pattern.compile(DhisConstants.PIPED_REGEX);
+		Pattern p2 = Pattern.compile(DhisConstants.PAIR_REGEX);
 		if (p1.matcher(body).matches()) {
 			// piped message format
 			return new PipedMessage(body);

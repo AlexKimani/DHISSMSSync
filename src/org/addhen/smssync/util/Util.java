@@ -79,16 +79,6 @@ import android.widget.Toast;
  * @author eyedol
  */
 public class Util {
-
-	/**
-	 * Dhis specific
-	 */
-
-	public static final String DATASET_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/Android/data/" + "org.addhen.smssync" + "/dhismappingfiles/";
-	public static final String DATASET_FILE = "dataSets.xml";
-	public static final String DATASET_FILE_URL = "http://apps.dhis2.org/demo/api/dataSets.xml";
-	public static final String EXPORT_DIRECTORY_PATH = Environment.getExternalStorageDirectory() + "/dhisexport/";
-
 	/**
 	 * Other
 	 */
@@ -503,15 +493,16 @@ public class Util {
 	 * @return boolean
 	 */
 	public static boolean postToAWebService(String xml, String from, Context context) {
-		Log.i(CLASS_TAG, "postToAWebService(): Post received SMS to configured URL:"
-				+ Prefrences.website + " xml: " + xml);
-		if(xml == null || context == null)
-			return false;
-
 		Prefrences.loadPreferences(context);
 
 		if (!Prefrences.website.equals("")) {
-			StringBuilder urlBuilder = new StringBuilder(Prefrences.website + "?phone=" + from);
+			StringBuilder urlBuilder = new StringBuilder(Prefrences.website);
+			urlBuilder.append(DhisConstants.POST_PATH);
+			urlBuilder.append(DhisConstants.PHONE_EXTENSION + from);
+
+			Log.i(CLASS_TAG, "postToAWebService(): Post received SMS to configured URL:"
+					+ urlBuilder.toString() + " xml: " + xml);
+
 			return MainHttpClient.postSmsToWebService(urlBuilder.toString(), xml, context);
 		}
 
@@ -526,13 +517,10 @@ public class Util {
 	 *         URL - 3 = can't make connection to it.
 	 */
 	public static int validateCallbackUrl(String callbackUrl) {
-
-		if(callbackUrl == null || callbackUrl.equals("") || callbackUrl.equals("http://"))
-			return 1;
 		if (TextUtils.isEmpty(callbackUrl)) {
 			return 1;
 		}
-		
+
 		pattern = Pattern.compile(URL_PATTERN);
 		matcher = pattern.matcher(callbackUrl);
 		if (matcher.matches()) {
@@ -586,12 +574,20 @@ public class Util {
 
 					// check if right format and if match post it
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					boolean parseResult = false;
-					if(aggregateMessage != null ) {
-						parseResult = aggregateMessage.parse();
+
+					if(aggregateMessage == null) {
+						return 1;
 					}
-					if(parseResult) {
+
+					if(!aggregateMessage.parse()) {
+						return 1;
+					}
+
 					String xml = aggregateMessage.getXMLString();
+
+					if(xml == null) {
+						return 1;
+					}
 
 					Messages messages = new Messages();
 					listMessages.add(messages);
@@ -614,13 +610,11 @@ public class Util {
 					} else {
 						deleted = 1;
 					}
-				}
 				} while (cursor.moveToNext());
 			}
 			cursor.close();
 		}
 		return deleted;
-
 	}
 
 	/**
@@ -964,27 +958,33 @@ public class Util {
 		}
 	}
 
-	public static boolean getDhisMappingFiles(Context context) {
-		String content = MainHttpClient.getFromWebService(DATASET_FILE_URL,context);
-		if(!createFile(content, DATASET_DIRECTORY_PATH, DATASET_FILE)) {
-			return false;
+	public static int getDhisMappingFiles(Context context) {
+		Prefrences.loadPreferences(context);
+		String instanceURL = Prefrences.website;
+
+		if (instanceURL.equals("")){
+			return 1;
+		}
+
+		String content = MainHttpClient.getFromWebService(instanceURL + DhisConstants.DATASET_PATH,context);
+		if(!createFile(content, DhisConstants.DATASET_DIRECTORY, DhisConstants.DATASET_FILE)) {
+			return 1;
 		}
 
 		ArrayList<String> list = DhisMappingHandler.getDatasetsUrls();
 		if(list == null) {
-			Util.showToast(context, R.string.download_failed);
-			return false;
+			return 1;
 		}
 
 		for (String url : list) {
 			String[] parts = url.split("/");
 
 			String setContent = MainHttpClient.getFromWebService(url + ".xml",context);
-			if(!createFile(setContent, DATASET_DIRECTORY_PATH, parts[parts.length-1] + ".xml" )) {
-				return false;
+			if(!createFile(setContent, DhisConstants.DATASET_DIRECTORY, parts[parts.length-1] + ".xml" )) {
+				return 1;
 			}
 		}
-		return true;
+		return 0;
 	}
 
 	public static int exportToXMLFile(Context context, int messagesId) {
@@ -1023,8 +1023,20 @@ public class Util {
 					messagesTimestamp = cursor.getString(messagesTimestampIndex);
 
 					AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesTimestamp );
-					aggregateMessage.parse();
+
+					if(aggregateMessage == null) {
+						return 1;
+					}
+
+					if(!aggregateMessage.parse()) {
+						return 1;
+					}
+
 					String xml = aggregateMessage.getXMLString();
+
+					if(xml == null) {
+						return 1;
+					}
 
 					Messages messages = new Messages();
 					listMessages.add(messages);
@@ -1035,14 +1047,16 @@ public class Util {
 					messages.setMessageDate(messagesTimestamp);
 
 					String date = formatDateTime(Long.parseLong(messagesTimestamp),"ddMMyykkmmss");
+					String datasetId = DhisMappingHandler.getDataSetId(aggregateMessage.getFormId());
+
+					if(datasetId == null) {
+						return 1;
+					}
 
 					boolean created = createFile(
 							xml,
-							EXPORT_DIRECTORY_PATH,
-							DhisMappingHandler
-							.getDataSetId(aggregateMessage
-									.getFormId())
-									+ "_" + date + ".xml");
+							DhisConstants.EXPORT_DIRECTORY,
+							datasetId + "_" + date + ".xml");
 					if(created) {
 						// log exported messages
 						MainApplication.mDb.addSentMessages(listMessages);
@@ -1059,5 +1073,51 @@ public class Util {
 			cursor.close();
 		}
 		return deleted;
+	}
+
+	public static String base64decode(byte[] data) {
+		 
+		 
+		    int tail = data.length;
+		    while (data[tail-1] == '=')  tail--;
+		    byte dest[] = new byte[tail - data.length/4];
+
+		    // ascii printable to 0-63 conversion
+		    for (int idx = 0; idx <data.length; idx++)
+		    {
+		      if (data[idx] == '=')    data[idx] = 0;
+		      else if (data[idx] == '/') data[idx] = 63;
+		      else if (data[idx] == '+') data[idx] = 62;
+		      else if (data[idx] >= '0'  &&  data[idx] <= '9')
+		        data[idx] = (byte)(data[idx] - ('0' - 52));
+		      else if (data[idx] >= 'a'  &&  data[idx] <= 'z')
+		        data[idx] = (byte)(data[idx] - ('a' - 26));
+		      else if (data[idx] >= 'A'  &&  data[idx] <= 'Z')
+		        data[idx] = (byte)(data[idx] - 'A');
+		    }
+
+		    // 4-byte to 3-byte conversion
+		    int sidx, didx;
+		    for (sidx = 0, didx=0; didx < dest.length-2; sidx += 4, didx += 3)
+		    {
+		      dest[didx]   = (byte) ( ((data[sidx] << 2) & 255) |
+		              ((data[sidx+1] >>> 4) & 3) );
+		      dest[didx+1] = (byte) ( ((data[sidx+1] << 4) & 255) |
+		              ((data[sidx+2] >>> 2) & 017) );
+		      dest[didx+2] = (byte) ( ((data[sidx+2] << 6) & 255) |
+		              (data[sidx+3] & 077) );
+		    }
+		    if (didx < dest.length)
+		    {
+		      dest[didx]   = (byte) ( ((data[sidx] << 2) & 255) |
+		              ((data[sidx+1] >>> 4) & 3) );
+		    }
+		    if (++didx < dest.length)
+		    {
+		      dest[didx]   = (byte) ( ((data[sidx+1] << 4) & 255) |
+		              ((data[sidx+2] >>> 2) & 017) );
+		    }
+		    return new String(dest);
+		  
 	}
 }
