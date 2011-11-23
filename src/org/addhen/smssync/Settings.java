@@ -149,6 +149,7 @@ public class Settings extends PreferenceActivity implements
 
 	private StringBuilder versionLabel;
 
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -340,7 +341,7 @@ public class Settings extends PreferenceActivity implements
 		/**
 		 * Dhis preferences
 		 */
-		editor.putString("dhisLoginPref", dhisLoginPref.getText());
+	//	editor.putString("dhisLoginPref", dhisLoginPref.getText());
 
 		/**
 		 * Other preferences
@@ -396,17 +397,7 @@ public class Settings extends PreferenceActivity implements
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
 
-		/**
-		 * Dhis preferences
-		 */
-		/**
-		 * Handles enabling/disabling of password field on change
-		 */
-		if (key.equals(KEY_LOGIN_PREF)) {
-			
-			Util.showToast(Settings.this, R.string.login_changed);
 
-		}
 		
 
 		/**

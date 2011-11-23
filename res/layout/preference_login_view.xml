@@ -37,7 +37,8 @@
             android:id="@+id/login_password"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="" />
+            android:text="" 
+            android:password="true"/>
     </LinearLayout>
 
 </LinearLayout>
