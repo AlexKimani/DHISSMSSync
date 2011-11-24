@@ -82,7 +82,7 @@ public class Prefrences {
 		/**
 		 * Other preferences
 		 */
-		website = settings.getString("WebsitePref", "http://apps.dhis2.org/demo/api/dataValueSets/");
+		website = settings.getString("WebsitePref", "");
 		
 		reply = settings.getString("ReplyPref",
 				context.getString(R.string.edittxt_reply_default));
