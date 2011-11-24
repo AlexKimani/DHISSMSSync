@@ -98,7 +98,7 @@ public class ListMessagesTextView extends LinearLayout {
         if(formName != null) {
         	messagesBody.setText(formName);
         } else {
-        	messagesBody.setText("Failed to lookup form name!");
+        	messagesBody.setText(getResources().getString(R.string.dhis_namelookup_failed));
         }
 
         textLayout.addView(messagesBody, new LinearLayout.LayoutParams(

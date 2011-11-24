@@ -88,7 +88,7 @@ public class ListMessagesAdapter extends BaseAdapter {
             if(formName != null) {
             	  iTv.setMessageBody(formName);
             } else {
-            	iTv.setMessageBody("Failed to lookup form name!");
+            	iTv.setMessageBody(iContext.getResources().getString(R.string.dhis_namelookup_failed));
             }
             iTv.setMessageDate(iItems.get(position).getMessageDate());
         }

@@ -11,6 +11,7 @@
 <resources>
     <!-- Dhis strings -->
     <string name="dhis_settings">Dhis settings</string>
+    <string name="dhis_namelookup_failed">Failed to lookup form name!</string>
     
     <!-- login setting -->
     <string name="dialog_title_login">Login</string>

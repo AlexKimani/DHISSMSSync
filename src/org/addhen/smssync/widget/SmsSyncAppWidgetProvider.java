@@ -10,6 +10,9 @@ import org.addhen.smssync.Settings;
 import org.addhen.smssync.MainApplication;
 import org.addhen.smssync.data.Messages;
 import org.addhen.smssync.data.Database;
+import org.addhen.smssync.util.AggregateMessage;
+import org.addhen.smssync.util.AggregateMessageFactory;
+import org.addhen.smssync.util.DhisMappingHandler;
 import org.addhen.smssync.util.Util;
 
 import android.app.IntentService;
@@ -131,7 +134,7 @@ public class SmsSyncAppWidgetProvider extends AppWidgetProvider {
         }
         return null;
     }
-
+    
     public static class SmsSyncAppWidgetService extends IntentService {
 
         public SmsSyncAppWidgetService() {
@@ -182,8 +185,8 @@ public class SmsSyncAppWidgetProvider extends AppWidgetProvider {
                 // set number
                 views.setViewVisibility(R.id.linear_pending_msg, View.VISIBLE);
                 views.setTextViewText(R.id.msg_number, mgs.getMessageFrom());
-                views.setTextViewText(R.id.msg_date, mgs.getMessageDate());
-                views.setTextViewText(R.id.msg_desc, mgs.getMessageBody());
+                views.setTextViewText(R.id.msg_date, formatDate(mgs.getMessageDate()));
+                views.setTextViewText(R.id.msg_desc, getMessageFormName(mgs));
 
                 // make all the views clickable
                 views.setOnClickPendingIntent(R.id.msg_number, mainAction);
@@ -257,6 +260,25 @@ public class SmsSyncAppWidgetProvider extends AppWidgetProvider {
                         ConnectivityManager.CONNECTIVITY_ACTION));
             }
         }
+        
+        private String formatDate(String date) {
+    		try {
+    			return Util.formatDateTime(Long.parseLong(date), "MMM dd, yyyy 'at' hh:mm a");
+    		} catch (NumberFormatException e) {
+    			return null;
+    		}
+    	}
+        
+        private String getMessageFormName(Messages msg) {
+    		AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(msg.getMessageBody(), msg.getMessageDate() );
+    		if(aggregateMessage != null) {
+    			if(aggregateMessage.parse()) {
+    				String formId = aggregateMessage.getFormId();
+    				return DhisMappingHandler.getDataSetName(formId);
+    			}
+    		}
+    		return getResources().getString(R.string.dhis_namelookup_failed);
+    	}
     }
 
     public static ArrayList<Messages> showMessages() {
@@ -303,5 +325,4 @@ public class SmsSyncAppWidgetProvider extends AppWidgetProvider {
         }
         return pendingMsgs;
     }
-
 }
