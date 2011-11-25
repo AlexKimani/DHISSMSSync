@@ -1,7 +1,6 @@
 
 package org.addhen.smssync.services;
 
-import org.addhen.smssync.MainApplication;
 import org.addhen.smssync.util.ServicesConstants;
 import org.addhen.smssync.util.Util;
 

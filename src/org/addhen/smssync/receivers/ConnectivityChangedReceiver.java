@@ -3,7 +3,6 @@ package org.addhen.smssync.receivers;
 
 import org.addhen.smssync.Prefrences;
 import org.addhen.smssync.services.AutoSyncService;
-import org.addhen.smssync.services.CheckTaskService;
 import org.addhen.smssync.services.SmsSyncServices;
 import org.addhen.smssync.util.Util;
 
@@ -53,11 +52,6 @@ public class ConnectivityChangedReceiver extends BroadcastReceiver {
                 // Push any pending messages now that we have connectivity
                 if (Prefrences.enableAutoSync) {
                     SmsSyncServices.sendWakefulTask(context, AutoSyncService.class);
-                }
-
-                // Check for tasks now that we have connectivity
-                if (Prefrences.enableTaskCheck) {
-                    SmsSyncServices.sendWakefulTask(context, CheckTaskService.class);
                 }
             }
         }

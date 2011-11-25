@@ -3,7 +3,6 @@ package org.addhen.smssync.receivers;
 
 import org.addhen.smssync.Prefrences;
 import org.addhen.smssync.services.AutoSyncService;
-import org.addhen.smssync.services.CheckTaskService;
 import org.addhen.smssync.util.Util;
 
 import android.content.BroadcastReceiver;
@@ -23,8 +22,6 @@ public class PowerStateChangedReceiver extends BroadcastReceiver {
 
     private Intent smsSyncAutoSyncServiceIntent;
 
-    private Intent smsSyncTaskCheckServiceIntent;
-
     @Override
     public void onReceive(Context context, Intent intent) {
         batteryLow = intent.getAction().equals(Intent.ACTION_BATTERY_LOW);
@@ -41,13 +38,6 @@ public class PowerStateChangedReceiver extends BroadcastReceiver {
                 if (Prefrences.enableAutoSync) {
                     smsSyncAutoSyncServiceIntent = new Intent(context, AutoSyncService.class);
                     context.stopService(smsSyncAutoSyncServiceIntent);
-                }
-
-                // Stop the service that checks for tasks
-                if (Prefrences.enableTaskCheck) {
-                    smsSyncTaskCheckServiceIntent = new Intent(context,
-                            CheckTaskService.class);
-                    context.stopService(smsSyncTaskCheckServiceIntent);
                 }
             }
         }

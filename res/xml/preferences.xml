@@ -24,6 +24,12 @@
             android:key="website_preference"
             android:summary="@string/edittxt_website_pref_summary"
             android:title="@string/edittxt_website_pref" />
+        
+        <org.addhen.smssync.util.LoginPreferenceDialog
+            android:dialogTitle="@string/dialog_title_login"
+            android:key="dhis_login"
+            android:summary="@string/edittxt_login_summary"
+            android:title="@string/edittxt_login_title" />
 
         <CheckBoxPreference
             android:key="auto_delete_preference"
@@ -36,24 +42,7 @@
             android:title="@string/chk_enable_sms_sync" />
     </PreferenceCategory>
 
-    <PreferenceCategory android:title="@string/dhis_settings" >
-
-        <org.addhen.smssync.util.LoginPreferenceDialog
-            android:dialogTitle="@string/dialog_title_login"
-            android:key="dhis_login"
-            android:summary="@string/edittxt_login_summary"
-            android:title="@string/edittxt_login_title" />
-
-        
-    </PreferenceCategory>
-
     <PreferenceCategory android:title="@string/reply_settings" >
-
-        <CheckBoxPreference
-            android:key="enable_reply_frm_server_preference"
-            android:summary="@string/chk_reply_frm_server_hint"
-            android:title="@string/chk_enable_reply_frm_server" />
-
         <CheckBoxPreference
             android:key="enable_reply_preference"
             android:summary="@string/chk_reply_hint"
@@ -80,21 +69,6 @@
             android:key="auto_sync_times"
             android:summary="@string/auto_sync_delay_hint"
             android:title="@string/txt_auto_sync_delay" />
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/task_check_settings" >
-
-        <CheckBoxPreference
-            android:key="task_check_preference"
-            android:summary="@string/chk_enable_task_check_hint"
-            android:title="@string/chk_enable_task_check" />
-
-        <ListPreference
-            android:defaultValue="5"
-            android:dialogTitle="@string/txt_task_check_delay"
-            android:key="task_check_times"
-            android:summary="@string/txt_task_check_delay_hint"
-            android:title="@string/txt_task_check_delay" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/about_smssync" >

@@ -32,8 +32,6 @@
 		<service android:name=".services.SmsReceiverService" />
 		<service android:name=".services.AutoSyncService" />
 		<service android:name=".services.AutoSyncScheduledService" />
-		<service android:name=".services.CheckTaskScheduledService" />
-		<service android:name=".services.CheckTaskService" />
 		<service android:name=".services.SyncPendingMessagesService" />
 
 		<activity android:launchMode="singleTop" android:name=".Settings"
@@ -104,9 +102,6 @@
 				<action android:name="android.intent.action.BOOT_COMPLETED" />
 			</intent-filter>
 		</receiver>
-
-		<!-- task check scheduled -->
-		<receiver android:name=".receivers.CheckTaskScheduledReceiver" />
 
 		<!-- task check scheduled -->
 		<receiver android:name=".receivers.AutoSyncScheduledReceiver" />

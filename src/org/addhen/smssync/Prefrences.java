@@ -42,8 +42,6 @@ public class Prefrences {
 	 */
 	public static int autoTime = 5;
 
-	public static int taskCheckTime = 5;
-
 	public static String website = "";
 
 	public static String reply = "";
@@ -54,11 +52,7 @@ public class Prefrences {
 
 	public static Boolean enableReply = false;
 
-	public static Boolean enableReplyFrmServer = false;
-
 	public static Boolean enableAutoSync = false;
-
-	public static Boolean enableTaskCheck = false;
 
 	public static final String PREF_NAME = "SMS_SYNC_PREF";
 
@@ -89,11 +83,8 @@ public class Prefrences {
 		enabled = settings.getBoolean("EnableSmsSync", false);
 		autoDelete = settings.getBoolean("EnableAutoDelete", false);
 		enableReply = settings.getBoolean("EnableReply", false);
-		enableReplyFrmServer = settings.getBoolean("EnableReplyFrmServer",
-				false);
 		enableAutoSync = settings.getBoolean("AutoSync", false);
 		autoTime = settings.getInt("AutoTime", autoTime);
-		taskCheckTime = settings.getInt("taskCheck", taskCheckTime);
 	}
 	
 	
