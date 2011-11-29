@@ -226,6 +226,13 @@ public class Settings extends PreferenceActivity implements
 		if (websitePref.getText().equals("")) {
 			websitePref.setText(HTTP_TEXT);
 		}
+		
+		if(!websitePref.getText().equals("")) {
+			if(websitePref.getText().endsWith("/") && !websitePref.getText().equals(HTTP_TEXT)) {
+				String websiteNoBackslash = websitePref.getText().substring(0,websitePref.getText().length()-1);
+				websitePref.setText(websiteNoBackslash);
+			}
+		}
 
 		if (replyPref.getText().equals("")) {
 			replyPref.setText(getString(R.string.edittxt_reply_default));
@@ -299,6 +306,8 @@ public class Settings extends PreferenceActivity implements
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
+		
+		
 		if (key.equals(KEY_ENABLE_SMS_SYNC_PREF)) {
 
 			if (sharedPreferences.getBoolean(KEY_ENABLE_SMS_SYNC_PREF, false)) {

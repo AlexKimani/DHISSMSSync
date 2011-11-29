@@ -38,6 +38,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -770,13 +772,18 @@ public class PendingMessagesActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			if (intent != null) {
+				SharedPreferences settings = getSharedPreferences(Prefrences.PREF_NAME, 0);
+				Editor editor = settings.edit();
 				int status = intent.getIntExtra("mappingstatus", 1);
 
 				if (status == 0) {
 					Util.showToast(PendingMessagesActivity.this,R.string.mapping_download_success);
+					editor.putBoolean("dhisMappingPref", true);
 				} else if (status == 1) {
 					Util.showToast(PendingMessagesActivity.this,R.string.mapping_download_failed);
+					editor.putBoolean("dhisMappingPref", false);
 				} 
+				editor.commit();
 				
 				if (getDhisMappingFilesServiceIntent != null) {
 					stopService(getDhisMappingFilesServiceIntent);
