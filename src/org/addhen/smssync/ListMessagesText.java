@@ -20,84 +20,88 @@
 
 package org.addhen.smssync;
 
+import org.addhen.smssync.util.AggregateMessage;
+import org.addhen.smssync.util.AggregateMessageFactory;
+import org.addhen.smssync.util.DhisMappingHandler;
 import org.addhen.smssync.util.Util;
 
 public class ListMessagesText {
 
-    private String messagesFrom;
+	private String messagesFrom;
 
-    private String messagesDate;
+	private String messagesDate;
 
-    private String messagesBody;
+	private String messagesBody;
 
-    private int messagesId;
+	private int messagesId;
 
-    boolean isSelectable;
+	boolean isSelectable;
 
-    public ListMessagesText(String messagesFrom, String messagesBody, String messagesDate,
-            int messagesId) {
-        
-        this.messagesFrom = messagesFrom;
-        
-        if (formatDate(messagesDate) != null)
-            this.messagesDate = formatDate(messagesDate);
-        else
-            this.messagesDate = messagesDate;
-        
-        this.messagesBody = messagesBody;
-        this.messagesId = messagesId;
-    }
+	public ListMessagesText(String messagesFrom, String messagesBody, String messagesDate,
+			int messagesId) {
 
-    private String formatDate(String date) {
-        try {
-            return Util.formatDateTime(Long.parseLong(date), "MMM dd, yyyy 'at' hh:mm a");
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
+		this.messagesFrom = messagesFrom;
+		this.messagesDate = messagesDate;
+		this.messagesBody = messagesBody;
+		this.messagesId = messagesId;
+	}
 
-    public boolean isSelectable() {
-        return isSelectable;
-    }
+	private String formatDate(String date) {
+		try {
+			return Util.formatDateTime(Long.parseLong(date), "MMM dd, yyyy 'at' hh:mm a");
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
 
-    public void setSelectable(boolean selectable) {
-        isSelectable = selectable;
-    }
+	public boolean isSelectable() {
+		return isSelectable;
+	}
 
-    public void setMessageFrom(String messagesFrom) {
-        this.messagesFrom = messagesFrom;
-    }
+	public void setSelectable(boolean selectable) {
+		isSelectable = selectable;
+	}
 
-    public String getMessageFrom() {
-        return this.messagesFrom;
-    }
+	public void setMessageFrom(String messagesFrom) {
+		this.messagesFrom = messagesFrom;
+	}
 
-    public void setMessageDate(String messagesDate) {
+	public String getMessageFrom() {
+		return this.messagesFrom;
+	}
 
-        if (formatDate(messagesDate) != null)
-            this.messagesDate = formatDate(messagesDate);
-        else
-            this.messagesDate = messagesDate;
-    }
+	public void setMessageDate(String messagesDate) {
+		this.messagesDate = messagesDate;
+	}
 
-    public String getMessageDate() {
+	public String getMessageDate() {
+		return formatDate(this.messagesDate);
+	}
 
-        return this.messagesDate;
-    }
+	public void setMessageBody(String messagesBody) {
+		this.messagesBody = messagesBody;
+	}
 
-    public void setMessageBody(String messagesBody) {
-        this.messagesBody = messagesBody;
-    }
+	public String getMessageBody() {
+		return this.messagesBody;
+	}
 
-    public String getMessageBody() {
-        return this.messagesBody;
-    }
+	public String getMessageFormName() {
+		AggregateMessage aggregateMessage = AggregateMessageFactory.getAggregateMessage(messagesBody, messagesDate );
+		if(aggregateMessage != null) {
+			if(aggregateMessage.parse()) {
+				String formId = aggregateMessage.getFormId();
+				return DhisMappingHandler.getDataSetName(formId);
+			}
+		}
+		return null;
+	}
 
-    public void setMessageId(int messagesId) {
-        this.messagesId = messagesId;
-    }
+	public void setMessageId(int messagesId) {
+		this.messagesId = messagesId;
+	}
 
-    public int getMessageId() {
-        return this.messagesId;
-    }
+	public int getMessageId() {
+		return this.messagesId;
+	}
 }

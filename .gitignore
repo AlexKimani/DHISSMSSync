@@ -1,4 +1,5 @@
 *.swp
 bin/*
 tests/bin/*
-
+gen/*
+/.gitignore

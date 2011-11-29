@@ -20,15 +20,9 @@
 
 package org.addhen.smssync;
 
-import org.addhen.smssync.receivers.AutoSyncScheduledReceiver;
-import org.addhen.smssync.receivers.CheckTaskScheduledReceiver;
 import org.addhen.smssync.receivers.SmsReceiver;
 import org.addhen.smssync.services.AutoSyncScheduledService;
-import org.addhen.smssync.services.CheckTaskScheduledService;
-import org.addhen.smssync.services.CheckTaskService;
-import org.addhen.smssync.services.ScheduleServices;
 import org.addhen.smssync.util.LoginPreferenceDialog;
-import org.addhen.smssync.util.ServicesConstants;
 import org.addhen.smssync.util.Util;
 
 import android.content.ComponentName;
@@ -46,7 +40,6 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
-import android.util.Log;
 
 /**
  * This class handles all related task for settings on SMSSync.
@@ -58,16 +51,8 @@ public class Settings extends PreferenceActivity implements
 
 	private static final String CLASS_TAG = Settings.class.getSimpleName();
 
-	/**
-	 * Dhis preferences
-	 */
 	public static final String KEY_LOGIN_PREF = "dhis_login";
-	private LoginPreferenceDialog dhisLoginPref;
-
 	
-	/**
-	 * Other preferences
-	 */
 	public static final String KEY_WEBSITE_PREF = "website_preference";
 
 	public static final String KEY_ENABLE_SMS_SYNC_PREF = "enable_sms_sync_preference";
@@ -82,8 +67,6 @@ public class Settings extends PreferenceActivity implements
 
 	public static final String KEY_ENABLE_REPLY = "enable_reply_preference";
 
-	public static final String KEY_ENABLE_REPLY_FRM_SERVER = "enable_reply_frm_server_preference";
-
 	public static final String KEY_REPLY = "reply_preference";
 
 	public static final String PREFS_NAME = "SMS_SYNC_PREF";
@@ -94,17 +77,11 @@ public class Settings extends PreferenceActivity implements
 
 	public static final String AUTO_SYNC_TIMES = "auto_sync_times";
 
-	public static final String TASK_CHECK = "task_check_preference";
-
-	public static final String TASK_CHECK_TIMES = "task_check_times";
-
 	public static final String ABOUT = "powered_preference";
 
 	private EditTextPreference websitePref;
 
 	private EditTextPreference replyPref;
-
-	private CheckBoxPreference enableReplyFrmServer;
 
 	private CheckBoxPreference enableSmsSync;
 
@@ -114,11 +91,7 @@ public class Settings extends PreferenceActivity implements
 
 	private CheckBoxPreference autoSync;
 
-	private CheckBoxPreference taskCheck;
-
 	private ListPreference autoSyncTimes;
-
-	private ListPreference taskCheckTimes;
 
 	private Preference about;
 
@@ -135,8 +108,6 @@ public class Settings extends PreferenceActivity implements
 
 	private int autoTime = 5;
 
-	private int taskCheckTime = 5;
-
 	private int callbackUrlValidityStatus = 1;
 
 	private final Handler mHandler = new Handler();
@@ -148,7 +119,8 @@ public class Settings extends PreferenceActivity implements
 	private String versionName;
 
 	private StringBuilder versionLabel;
-
+	
+	private LoginPreferenceDialog dhisLoginPref;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -170,17 +142,10 @@ public class Settings extends PreferenceActivity implements
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		/**
-		 * Dhis preferences
-		 */
+
 		dhisLoginPref = (LoginPreferenceDialog) getPreferenceScreen()
 				.findPreference(KEY_LOGIN_PREF);
 
-		
-
-		/**
-		 * Other preferences
-		 */
 		websitePref = (EditTextPreference) getPreferenceScreen()
 				.findPreference(KEY_WEBSITE_PREF);
 
@@ -192,14 +157,9 @@ public class Settings extends PreferenceActivity implements
 
 		enableReply = (CheckBoxPreference) getPreferenceScreen()
 				.findPreference(KEY_ENABLE_REPLY);
-		enableReplyFrmServer = (CheckBoxPreference) getPreferenceScreen()
-				.findPreference(KEY_ENABLE_REPLY_FRM_SERVER);
 
 		autoSync = (CheckBoxPreference) getPreferenceScreen().findPreference(
 				AUTO_SYNC);
-
-		taskCheck = (CheckBoxPreference) getPreferenceScreen().findPreference(
-				TASK_CHECK);
 
 		replyPref = (EditTextPreference) getPreferenceScreen().findPreference(
 				KEY_REPLY);
@@ -208,11 +168,6 @@ public class Settings extends PreferenceActivity implements
 				AUTO_SYNC_TIMES);
 		autoSyncTimes.setEntries(autoSyncEntries);
 		autoSyncTimes.setEntryValues(autoSyncValues);
-
-		taskCheckTimes = (ListPreference) getPreferenceScreen().findPreference(
-				TASK_CHECK_TIMES);
-		taskCheckTimes.setEntries(autoSyncEntries);
-		taskCheckTimes.setEntryValues(autoSyncValues);
 
 		about = (Preference) getPreferenceScreen().findPreference(ABOUT);
 
@@ -260,27 +215,6 @@ public class Settings extends PreferenceActivity implements
 	}
 
 	/**
-	 * Get the time frequency selected by the user for auto task checking.
-	 * 
-	 * @return int
-	 */
-	private int initializeAutoTaskTime() {
-
-		// "5 Minutes", "10 Minutes", "15 Minutes", "30", "60 Minutes"
-		if (autoSyncTimes.getValue().matches("10")) {
-			return 10;
-		} else if (autoSyncTimes.getValue().matches("15")) {
-			return 15;
-		} else if (autoSyncTimes.getValue().matches("30")) {
-			return 30;
-		} else if (autoSyncTimes.getValue().matches("60")) {
-			return 60;
-		} else {
-			return 5;
-		}
-	}
-
-	/**
 	 * Save settings changes.
 	 * 
 	 * @return void
@@ -289,12 +223,6 @@ public class Settings extends PreferenceActivity implements
 
 		settings = getSharedPreferences(PREFS_NAME, 0);
 
-		
-		
-
-		/**
-		 * Other preferences
-		 */
 		if (websitePref.getText().equals("")) {
 			websitePref.setText(HTTP_TEXT);
 		}
@@ -305,18 +233,8 @@ public class Settings extends PreferenceActivity implements
 
 		if (enableReply.isChecked()) {
 			replyPref.setEnabled(true);
-			enableReplyFrmServer.setChecked(false);
-			enableReplyFrmServer.setEnabled(false);
 		} else {
 			replyPref.setEnabled(false);
-			enableReplyFrmServer.setEnabled(true);
-		}
-
-		if (enableReplyFrmServer.isChecked()) {
-			enableReply.setChecked(false);
-			enableReply.setEnabled(false);
-		} else {
-			enableReply.setEnabled(true);
 		}
 
 		if (autoSync.isChecked()) {
@@ -328,20 +246,10 @@ public class Settings extends PreferenceActivity implements
 		// Initialize the selected time to frequently sync pending messages
 		autoTime = initializeAutoSyncTime();
 
-		if (taskCheck.isChecked()) {
-			taskCheckTimes.setEnabled(true);
-		} else {
-			taskCheckTimes.setEnabled(false);
-		}
-
-		// Initialize the selected time to frequently to auto check for tasks
-		taskCheckTime = initializeAutoTaskTime();
-
 		editor = settings.edit();
 		/**
 		 * Dhis preferences
 		 */
-	//	editor.putString("dhisLoginPref", dhisLoginPref.getText());
 
 		/**
 		 * Other preferences
@@ -351,14 +259,9 @@ public class Settings extends PreferenceActivity implements
 		editor.putBoolean("EnableSmsSync", enableSmsSync.isChecked());
 		editor.putBoolean("EnableAutoDelete", enableAutoDelete.isChecked());
 		editor.putBoolean("EnableReply", enableReply.isChecked());
-		editor.putBoolean("EnableReplyFrmServer",
-				enableReplyFrmServer.isChecked());
 		editor.putBoolean("AutoSync", autoSync.isChecked());
 		editor.putInt("AutoTime", autoTime);
-		editor.putInt("taskCheck", taskCheckTime);
 		editor.commit();
-
-		// blanks out password and username field
 
 	}
 
@@ -396,13 +299,6 @@ public class Settings extends PreferenceActivity implements
 	 */
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
 			String key) {
-
-
-		
-
-		/**
-		 * Other preferences
-		 */
 		if (key.equals(KEY_ENABLE_SMS_SYNC_PREF)) {
 
 			if (sharedPreferences.getBoolean(KEY_ENABLE_SMS_SYNC_PREF, false)) {
@@ -436,51 +332,8 @@ public class Settings extends PreferenceActivity implements
 				// messages
 				Prefrences.autoTime = initializeAutoSyncTime();
 				autoSyncTimes.setEnabled(true);
-				// start the scheduler for 'task check' service
-				long interval = (Prefrences.autoTime * 60000);
-				new ScheduleServices(
-						this,
-						new Intent(Settings.this,
-								AutoSyncScheduledService.class),
-						AutoSyncScheduledReceiver.class,
-						interval,
-						ServicesConstants.CHECK_TASK_SCHEDULED_SERVICE_REQUEST_CODE,
-						0);
-
 			} else {
-
-				// Initialize the selected time to frequently to auto check for
-				// tasks
-				Prefrences.taskCheckTime = initializeAutoTaskTime();
-				stopService(new Intent(Settings.this,
-						AutoSyncScheduledService.class));
-
-				// start the scheduler for 'task check' service
-				long interval = (Prefrences.taskCheckTime * 60000);
-				new ScheduleServices(
-						this,
-						new Intent(Settings.this,
-								CheckTaskScheduledService.class),
-						CheckTaskScheduledReceiver.class,
-						interval,
-						ServicesConstants.CHECK_TASK_SCHEDULED_SERVICE_REQUEST_CODE,
-						0);
-
 				autoSyncTimes.setEnabled(false);
-			}
-		}
-
-		// Enable task checking
-		if (key.equals(TASK_CHECK)) {
-
-			if (sharedPreferences.getBoolean(TASK_CHECK, false)) {
-				autoTaskCheckValidateCallbackURL(sharedPreferences.getString(
-						KEY_WEBSITE_PREF, ""));
-
-			} else {
-
-				stopService(new Intent(Settings.this, CheckTaskService.class));
-				taskCheckTimes.setEnabled(false);
 			}
 		}
 
@@ -494,35 +347,7 @@ public class Settings extends PreferenceActivity implements
 				Prefrences.autoTime = initializeAutoSyncTime();
 				stopService(new Intent(Settings.this,
 						AutoSyncScheduledService.class));
-
-				// start the scheduler for 'task check' service
-				long interval = (Prefrences.autoTime * 60000);
-				new ScheduleServices(
-						this,
-						new Intent(Settings.this,
-								AutoSyncScheduledService.class),
-						AutoSyncScheduledReceiver.class,
-						interval,
-						ServicesConstants.CHECK_TASK_SCHEDULED_SERVICE_REQUEST_CODE,
-						0);
 			}
-		}
-
-		if (key.equals(TASK_CHECK_TIMES)) {
-
-			Prefrences.taskCheckTime = initializeAutoTaskTime();
-			stopService(new Intent(Settings.this,
-					CheckTaskScheduledService.class));
-
-			// start the scheduler for 'task check' service
-			long interval = (Prefrences.taskCheckTime * 60000);
-			new ScheduleServices(
-					this,
-					new Intent(Settings.this, CheckTaskScheduledService.class),
-					CheckTaskScheduledReceiver.class,
-					interval,
-					ServicesConstants.CHECK_TASK_SCHEDULED_SERVICE_REQUEST_CODE,
-					0);
 		}
 
 		if (key.equals(KEY_WEBSITE_PREF)) {
@@ -531,59 +356,6 @@ public class Settings extends PreferenceActivity implements
 		}
 
 		this.savePreferences();
-	}
-
-	/**
-	 * Create runnable for validating callback URL. Putting the validation
-	 * process in it own thread provides efficiency.
-	 */
-	final Runnable mTaskCheckEnabled = new Runnable() {
-
-		public void run() {
-
-			if (callbackUrlValidityStatus == 1) {
-
-				Util.showToast(Settings.this, R.string.no_configured_url);
-				taskCheck.setChecked(false);
-
-			} else if (callbackUrlValidityStatus == 2) {
-
-				Util.showToast(Settings.this, R.string.invalid_url);
-				taskCheck.setChecked(false);
-
-			} else if (callbackUrlValidityStatus == 3) {
-
-				Util.showToast(Settings.this, R.string.no_connection);
-				taskCheck.setChecked(false);
-
-			} else {
-
-				taskCheck.setChecked(true);
-				startService(new Intent(Settings.this,
-						CheckTaskScheduledService.class));
-
-			}
-		}
-	};
-
-	/**
-	 * Create a child thread and validate the callback URL in it when enabling
-	 * auto task check preference.
-	 * 
-	 * @param String
-	 *            Url - The Callback URL to be validated.
-	 * @return void
-	 */
-	public void autoTaskCheckValidateCallbackURL(final String Url) {
-
-		Thread t = new Thread() {
-			public void run() {
-
-				callbackUrlValidityStatus = Util.validateCallbackUrl(Url);
-				mHandler.post(mTaskCheckEnabled);
-			}
-		};
-		t.start();
 	}
 
 	/**

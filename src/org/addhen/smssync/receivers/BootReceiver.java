@@ -3,7 +3,6 @@ package org.addhen.smssync.receivers;
 
 import org.addhen.smssync.Prefrences;
 import org.addhen.smssync.services.AutoSyncService;
-import org.addhen.smssync.services.CheckTaskService;
 import org.addhen.smssync.services.ScheduleServices;
 import org.addhen.smssync.services.SmsSyncServices;
 import org.addhen.smssync.util.ServicesConstants;
@@ -46,17 +45,6 @@ public class BootReceiver extends BroadcastReceiver {
                     long interval = (Prefrences.autoTime * 60000);
                     new ScheduleServices(context, intent, AutoSyncScheduledReceiver.class,
                             interval, ServicesConstants.AUTO_SYNC_SCHEDULED_SERVICE_REQUEST_CODE, 0);
-                }
-
-                // Check for tasks now that we have connectivity
-                if (Prefrences.enableTaskCheck) {
-                    SmsSyncServices.sendWakefulTask(context, CheckTaskService.class);
-                    
-                    // start the scheduler for 'task check' service
-                    long interval = (Prefrences.taskCheckTime * 60000);
-                    new ScheduleServices(context, intent, CheckTaskScheduledReceiver.class,
-                            interval, ServicesConstants.CHECK_TASK_SCHEDULED_SERVICE_REQUEST_CODE,
-                            0);
                 }
             }
         }

@@ -22,7 +22,6 @@ package org.addhen.smssync.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,7 +30,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,11 +44,9 @@ import org.addhen.smssync.R;
 import org.addhen.smssync.data.Database;
 import org.addhen.smssync.data.Messages;
 import org.addhen.smssync.net.MainHttpClient;
-import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -643,73 +639,6 @@ public class Util {
 		}
 		if (PhoneNumberUtils.isGlobalPhoneNumber(sendTo))
 			sms.sendMultipartTextMessage(sendTo, null, parts, sentIntents, deliveryIntents);
-	}
-
-	/**
-	 * Performs a task based on what callback URL tells it.
-	 * 
-	 * @param Context context - the activity calling this method.
-	 * @return void
-	 */
-	public static void performTask(Context context) {
-		Log.i(CLASS_TAG, "performTask(): perform a task");
-		// load preferences
-		Prefrences.loadPreferences(context);
-
-		// validate configured url
-		int status = validateCallbackUrl(Prefrences.website);
-		if (status == 1) {
-			showToast(context, R.string.no_configured_url);
-		} else if (status == 2) {
-			showToast(context, R.string.invalid_url);
-		} else if (status == 3) {
-			showToast(context, R.string.no_connection);
-		} else {
-
-			StringBuilder uriBuilder = new StringBuilder(Prefrences.website);
-
-			uriBuilder.append("?task=send");
-
-			String response = MainHttpClient.getFromWebService(uriBuilder.toString(),context);
-			Log.d(CLASS_TAG, "TaskCheckResponse: " + response);
-			String task = "";
-			String secret = "";
-			if (!TextUtils.isEmpty(response) && response != null) {
-
-				try {
-
-					jsonObject = new JSONObject(response);
-					JSONObject payloadObject = jsonObject.getJSONObject("payload");
-
-					if (payloadObject != null) {
-						task = payloadObject.getString("task");
-						secret = payloadObject.getString("secret");
-						if (task.equals("send")) {
-							jsonArray = payloadObject.getJSONArray("messages");
-
-							for (int index = 0; index < jsonArray.length(); ++index) {
-								jsonObject = jsonArray.getJSONObject(index);
-
-								sendSms(context, jsonObject.getString("to"),
-										jsonObject.getString("message"));
-							}
-
-						} else {
-							// no task enabled on the callback url.
-							showToast(context, R.string.no_task);
-						}
-
-					} else {
-
-						showToast(context, R.string.no_task);
-					}
-
-				} catch (JSONException e) {
-					Log.e(CLASS_TAG, "Error: " + e.getMessage());
-					showToast(context, R.string.no_task);
-				}
-			}
-		}
 	}
 
 	/**

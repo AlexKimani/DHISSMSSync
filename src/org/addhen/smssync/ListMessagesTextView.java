@@ -94,7 +94,12 @@ public class ListMessagesTextView extends LinearLayout {
         messagesBody.setLayoutParams(new LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
-        messagesBody.setText(listText.getMessageBody());
+        String formName = listText.getMessageFormName();
+        if(formName != null) {
+        	messagesBody.setText(formName);
+        } else {
+        	messagesBody.setText(getResources().getString(R.string.dhis_namelookup_failed));
+        }
 
         textLayout.addView(messagesBody, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));

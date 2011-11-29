@@ -26,9 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 
-import org.addhen.smssync.MainApplication;
 import org.addhen.smssync.Prefrences;
-import org.addhen.smssync.services.SmsReceiverService;
 import org.addhen.smssync.util.Util;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpVersion;
@@ -51,7 +49,6 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 public class MainHttpClient {

@@ -8,14 +8,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.addhen.smssync.R;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-
-import android.os.Environment;
 
 /**
  * @author 
@@ -41,7 +38,7 @@ public abstract class DhisMappingHandler {
 		NodeList dataSetList = datasetDoc.getElementsByTagName("dataSet");
 
 		int index = Integer.parseInt(formId)-1;
-		if(index < 1 || index > dataSetList.getLength()) {
+		if(index < 0 || index > dataSetList.getLength()) {
 			return false;
 		} 
 
@@ -90,13 +87,33 @@ public abstract class DhisMappingHandler {
 		NodeList dataSetList = doc.getElementsByTagName("dataSet");
 		
 		int setNumber = Integer.parseInt(formId)-1;
-		if(setNumber < 1 || setNumber > dataSetList.getLength()) {
+		if(setNumber < 0 || setNumber > dataSetList.getLength()) {
 			return null;
 		} 
 
 		Node setNode = dataSetList.item(setNumber);
 		Element setElem = (Element) setNode;
 		return setElem.getAttribute("id");
+	}
+	
+	
+	public static String getDataSetName(String formId) {
+		Document doc = initDoc(DhisConstants.DATASET_DIRECTORY + DhisConstants.DATASET_FILE);
+
+		if(doc == null) {
+			return null;
+		}
+
+		NodeList dataSetList = doc.getElementsByTagName("dataSet");
+		
+		int setNumber = Integer.parseInt(formId)-1;
+		if(setNumber < 0 || setNumber > dataSetList.getLength()) {
+			return null;
+		} 
+
+		Node setNode = dataSetList.item(setNumber);
+		Element setElem = (Element) setNode;
+		return setElem.getAttribute("name");
 	}
 
 	private static Document initDoc(String fileName) {

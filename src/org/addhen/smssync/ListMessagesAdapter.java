@@ -83,9 +83,14 @@ public class ListMessagesAdapter extends BaseAdapter {
 
             iTv = (ListMessagesTextView)convertView;
             iTv.setMessageFrom(iItems.get(position).getMessageFrom());
-            iTv.setMessageBody(iItems.get(position).getMessageBody());
+            
+            String formName = iItems.get(position).getMessageFormName();
+            if(formName != null) {
+            	  iTv.setMessageBody(formName);
+            } else {
+            	iTv.setMessageBody(iContext.getResources().getString(R.string.dhis_namelookup_failed));
+            }
             iTv.setMessageDate(iItems.get(position).getMessageDate());
-
         }
         return iTv;
     }

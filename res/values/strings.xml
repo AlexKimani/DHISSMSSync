@@ -10,12 +10,12 @@
 <!-- This handles all the strings in the app. -->
 <resources>
     <!-- Dhis strings -->
-    <string name="dhis_settings">Dhis settings</string>
+    <string name="dhis_namelookup_failed">Failed to lookup form name.</string>
     
     <!-- login setting -->
-    <string name="dialog_title_login">Login</string>
-    <string name="edittxt_login_summary">Login information for dhis server</string>
-    <string name="edittxt_login_title">Login</string>
+    <string name="dialog_title_login">Enter Login Information</string>
+    <string name="edittxt_login_summary">This is the login information for the website.</string>
+    <string name="edittxt_login_title">Enter Login Information</string>
     
     <!-- dhis toast/notification strings -->
     <string name="login_changed">Login information has been changed</string>
