@@ -41,17 +41,13 @@ public class LoginPreferenceDialog extends DialogPreference {
 		if(!Prefrences.dhisLoginPref.equals("")) {	
 			// Get the previous username/password
 			String decodedLogin = Util.base64decode(Prefrences.dhisLoginPref.getBytes());
-			String[] loginInfo = decodedLogin.split(":");
-			if(loginInfo[0] != null) {
-				loginUsername.setText(loginInfo[0]);	
-			}
-			if(loginInfo[1] != null) {
-				loginPassword.setText(loginInfo[1]);	
-			}
+			int sepIndex = decodedLogin.indexOf(":");
+			String username = decodedLogin.substring(0, sepIndex);
+			String password = decodedLogin.substring(sepIndex+1,decodedLogin.length());
+			loginUsername.setText(username);	
+			loginPassword.setText(password);	
 		}
-
 		return view;
-
 	}
 
 	/**
