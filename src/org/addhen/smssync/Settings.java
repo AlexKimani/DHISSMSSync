@@ -126,7 +126,7 @@ public class Settings extends PreferenceActivity implements
 
 	private SharedPreferences.Editor editor;
 
-	private static final String URL = "http://smssync.ushahidi.com";
+	private static final String URL = "https://github.com/DHIS/DHISSMSSync/wiki";
 
 	private CharSequence[] autoSyncEntries = { "5 Minutes", "10 Minutes",
 			"15 Minutes", "30 Minutes", "60 Minutes" };
