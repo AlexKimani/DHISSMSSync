@@ -20,12 +20,9 @@
 
 package org.addhen.smssync;
 
-import org.addhen.smssync.receivers.AutoSyncScheduledReceiver;
 import org.addhen.smssync.receivers.SmsReceiver;
 import org.addhen.smssync.services.AutoSyncScheduledService;
-import org.addhen.smssync.services.ScheduleServices;
 import org.addhen.smssync.util.LoginPreferenceDialog;
-import org.addhen.smssync.util.ServicesConstants;
 import org.addhen.smssync.util.Util;
 
 import android.content.ComponentName;

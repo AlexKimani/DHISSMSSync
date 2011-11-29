@@ -22,7 +22,6 @@ package org.addhen.smssync.util;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,7 +30,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -46,11 +44,9 @@ import org.addhen.smssync.R;
 import org.addhen.smssync.data.Database;
 import org.addhen.smssync.data.Messages;
 import org.addhen.smssync.net.MainHttpClient;
-import org.apache.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Document;
 
 import android.app.Notification;
 import android.app.NotificationManager;

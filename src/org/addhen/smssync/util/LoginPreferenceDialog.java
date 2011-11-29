@@ -31,25 +31,29 @@ public class LoginPreferenceDialog extends DialogPreference {
 	 */
 	protected View onCreateDialogView() {
 		LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-		
+
 		Prefrences.loadPreferences(context);
 		View view = layoutInflater.inflate(R.layout.preference_login_view, null);
 
-		
+
 		loginUsername = (EditText)view.findViewById(R.id.login_username);
 		loginPassword = (EditText)view.findViewById(R.id.login_password);
 		if(!Prefrences.dhisLoginPref.equals("")) {	
 			// Get the previous username/password
 			String decodedLogin = Util.base64decode(Prefrences.dhisLoginPref.getBytes());
 			String[] loginInfo = decodedLogin.split(":");
-			loginUsername.setText(loginInfo[0]);
-			loginPassword.setText(loginInfo[1]);
+			if(loginInfo[0] != null) {
+				loginUsername.setText(loginInfo[0]);	
+			}
+			if(loginInfo[1] != null) {
+				loginPassword.setText(loginInfo[1]);	
+			}
 		}
-				
+
 		return view;
-		
+
 	}
-	
+
 	/**
 	 * Persists an Base64 encoded version of the username and password
 	 */
@@ -58,7 +62,7 @@ public class LoginPreferenceDialog extends DialogPreference {
 		if (which == DialogInterface.BUTTON_POSITIVE) {
 			encodedLogin = Util.base64encode((loginUsername.getText()+":"+loginPassword.getText()).getBytes()); 
 			Prefrences.loadPreferences(context);
-			
+
 			if(!encodedLogin.equals(Prefrences.dhisLoginPref)) {
 				SharedPreferences settings = context.getSharedPreferences("SMS_SYNC_PREF", 0);
 				Editor editor = settings.edit();
@@ -66,7 +70,7 @@ public class LoginPreferenceDialog extends DialogPreference {
 				Util.showToast(context, R.string.login_changed);
 				editor.commit();
 			}
-			
+
 		}
 
 		super.onClick(dialog, which);
