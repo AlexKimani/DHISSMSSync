@@ -35,7 +35,6 @@ public class LoginPreferenceDialog extends DialogPreference {
 		Prefrences.loadPreferences(context);
 		View view = layoutInflater.inflate(R.layout.preference_login_view, null);
 
-
 		loginUsername = (EditText)view.findViewById(R.id.login_username);
 		loginPassword = (EditText)view.findViewById(R.id.login_password);
 		if(!Prefrences.dhisLoginPref.equals("")) {	
@@ -60,7 +59,7 @@ public class LoginPreferenceDialog extends DialogPreference {
 			Prefrences.loadPreferences(context);
 
 			if(!encodedLogin.equals(Prefrences.dhisLoginPref)) {
-				SharedPreferences settings = context.getSharedPreferences("SMS_SYNC_PREF", 0);
+				SharedPreferences settings = context.getSharedPreferences(Prefrences.PREF_NAME, 0);
 				Editor editor = settings.edit();
 				editor.putString("dhisLoginPref",encodedLogin );
 				Util.showToast(context, R.string.login_changed);

@@ -36,6 +36,18 @@
     <!-- dhis progress dialog -->
     <string name="export_messages">Exporting messages...</string>
     
+    <!-- dhis startup dialog -->
+    <string name ="dialog_title">Warning!</string>
+    <string name ="dialog_header_text">The following might cause Dhis Sync to not work properly:</string>
+    <string name ="dialog_footer_text">Check our wikipage for more information</string>
+    <string name ="dialog_button_ok">OK</string>
+    <string name ="dialog_button_dismiss">Don\'t show again</string>
+    <string name ="dialog_button_settings">Settings</string>
+    <string name ="website_not_set">Website has not been set</string>
+    <string name ="login_not_set">Login information has not been set</string>
+    <string name ="no_mapping_files">Mapping files has not been downloaded</string>
+    
+        
     <!-- Other strings -->
 	<string name="edittxt_website_pref">Enter The Sync URL</string>
 	<string name="edittxt_website_pref_summary">This is the website that will receive the text
@@ -81,7 +93,7 @@
 	<string name="txt_task_check_delay_hint">Set how often SMSSync checks for a task to be
 		executed.</string>
 
-	<string name="app_name">DhisSMSSync</string>
+	<string name="app_name">DHIS Sync</string>
 	<string name="outbox">SMSSync Pending Messages</string>
 	<string name="version_status">Beta</string>
 	<string name="sms_status_success">SMSSync Message Sent</string>
@@ -95,7 +107,7 @@
 		configured or there is no Internet connection. Please double check
 		your Internet connection or your configuration.</string>
 	<string name="powered">Powered</string>
-	<string name="powered_by">Created by Ushahidi</string>
+	<string name="powered_by">Powered by Ushahidi</string>
 
 	<string name="menu_delete_all">Delete All</string>
 	<string name="menu_sync_all">Synchronize All</string>
@@ -142,7 +154,7 @@
 	
 	<!-- Pending and failed messages Tab -->
 	<string name="pending_messages">Pending</string>
-	<string name="sent_messages">Sent</string>
+	<string name="sent_messages">Sent/Exported</string>
 	<string name="title_bar_text">Messages</string>
 	<string name="no_sent_messages">No sent messages.</string>
 	

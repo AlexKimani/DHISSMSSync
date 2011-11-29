@@ -35,6 +35,10 @@ public class Prefrences {
 	 * Dhis preferences
 	 */
 	public static String dhisLoginPref = "";
+	
+	public static Boolean dhisMappingPref = false;
+	
+	public static Boolean dhisDialogPref = true;
 
 	
 	/**
@@ -71,6 +75,10 @@ public class Prefrences {
 		 * Dhis preferences
 		 */
 		dhisLoginPref = settings.getString("dhisLoginPref", "");
+		
+		dhisMappingPref = settings.getBoolean("dhisMappingPref", false);
+		
+		dhisDialogPref = settings.getBoolean("dhisDialogPref", true);
 
 
 		/**
