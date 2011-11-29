@@ -5,7 +5,7 @@ import android.os.Environment;
 public class DhisConstants {
 	
 	public static final String PIPED_REGEX = "\\w+#\\w+#((\\w+\\|)*(\\w+))";
-	public static final String PAIR_REGEX = "\\w+\\s+(((\\w+\\.\\w+=\\w+|\\w+=\\w+),\\s*)*((\\w+\\.\\w+=\\w+|\\w+=\\w+)){1})";
+	public static final String PAIR_REGEX = "\\w+\\s+(((\\w+\\.\\w+\\s*=\\s*\\w+|\\w+\\s*=\\s*\\w+),\\s*)*((\\w+\\.\\w+\\s*=\\s*\\w+|\\w+\\s*=\\s*\\w+)){1})";
 	
 	public static final String EXTERNAL_STORAGE = Environment.getExternalStorageDirectory() + "";
 	public static final String EXPORT_DIRECTORY = EXTERNAL_STORAGE + "/DHIS_EXPORT/";
