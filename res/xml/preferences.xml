@@ -25,7 +25,7 @@
             android:summary="@string/edittxt_website_pref_summary"
             android:title="@string/edittxt_website_pref" />
         
-        <org.addhen.smssync.util.LoginPreferenceDialog
+        <org.dhis.smssync.util.LoginPreferenceDialog
             android:dialogTitle="@string/dialog_title_login"
             android:key="dhis_login"
             android:summary="@string/edittxt_login_summary"

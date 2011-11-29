@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package org.addhen.smssync.test;
+package org.dhis.smssync.test;
 
 public final class R {
     public static final class attr {

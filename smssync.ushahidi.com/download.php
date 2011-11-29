@@ -49,7 +49,7 @@
         <div class="span8 columns">
             <h2>Android market</h2>
             <p><strong>The app is available today on the Android market. You can download it on your phone by clicking on the image on the left or scanning the QR code on the right. Enjoy!</strong></p>
-    <p><a href="https://market.android.com/details?id=org.addhen.smssync"><img class="size-thumbnail wp-image-4527  " title="ushahidi_android_on_the_market" src="http://blog.ushahidi.com/wp-content/uploads/2011/07/ushahidi_android_on_the_market-150x150.png" alt="Android market" width="200" height="200" /></a>
+    <p><a href="https://market.android.com/details?id=org.dhis.smssync"><img class="size-thumbnail wp-image-4527  " title="ushahidi_android_on_the_market" src="http://blog.ushahidi.com/wp-content/uploads/2011/07/ushahidi_android_on_the_market-150x150.png" alt="Android market" width="200" height="200" /></a>
         </div>
 
     </div>

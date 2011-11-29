@@ -1,16 +1,16 @@
 
-package org.addhen.smssync.test;
+package org.dhis.smssync.test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.addhen.smssync.ListMessagesAdapter;
-import org.addhen.smssync.R;
-import org.addhen.smssync.SmsSyncApplication;
-import org.addhen.smssync.SmsSyncOutbox;
-import org.addhen.smssync.Util;
-import org.addhen.smssync.data.Messages;
-import org.addhen.smssync.data.SmsSyncDatabase;
+import org.dhis.smssync.ListMessagesAdapter;
+import org.dhis.smssync.R;
+import org.dhis.smssync.SmsSyncApplication;
+import org.dhis.smssync.SmsSyncOutbox;
+import org.dhis.smssync.Util;
+import org.dhis.smssync.data.Messages;
+import org.dhis.smssync.data.SmsSyncDatabase;
 
 import android.database.Cursor;
 import android.test.ActivityInstrumentationTestCase2;
@@ -45,7 +45,7 @@ public class SmsSyncOutboxTest extends ActivityInstrumentationTestCase2<SmsSyncO
     public static SmsSyncDatabase mDb;
 
     public SmsSyncOutboxTest() {
-        super("org.addhen.smssync", SmsSyncOutbox.class);
+        super("org.dhis.smssync", SmsSyncOutbox.class);
 
     }
 
